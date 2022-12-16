@@ -3,6 +3,7 @@ class Map:
     Class map.
     Takes file_location, that is str representing file path.
     Contains attributes:
+
     :param start_map: start of a level map never changes
     :type start_map: list of lists
 
@@ -15,8 +16,8 @@ class Map:
     :param moves: moves made so far in the game
     :type moves: list of touples
 
-    :param current_move: number of moves made
-    :type current_move: int
+    :param move_count: number of moves made
+    :type move_count: int
     """
     def __init__(self, file_location):
         map_file = open(file_location, "r")
@@ -25,7 +26,7 @@ class Map:
         self.current_map = [line.split() for line in map_file]
         self._targets = self.target_coordinates()
         self._moves = []
-        self._current_move = 0
+        self._move_count = 0
 
     @property
     def player_position(self):
@@ -103,7 +104,7 @@ class Map:
                 self._moves.append((direction, "N"))
             self.current_map[self.player_position[0]][self.player_position[1]] = "f"
             self.current_map[row][column] = "p"
-            self._current_move += 1
+            self._move_count += 1
             return True
         return False
 
@@ -121,9 +122,33 @@ class Map:
         """
         Method undos last made move.
         """
-        directions = [['U', [-1, 0], [-2, 0]], ['R', [0, 1], [0, 2]],
-                      ['D', [1, 0], [2, 0]], ['L', [0, -1], [0, -2]]]
-        direction = self._moves[self.current_move - 1]
+        if self._move_count == 0:
+            return None
+        directions = {'U': [1, 0], 'R': [0, -1], 'D': [-1, 0], 'L': [0, 1]}
+        direction = self._moves[self._move_count - 1]
+        row, column = self.player_position[0], self.player_position[1]
+        if direction[1] == "B":
+            self.current_map[row][column] = "b"
+            row_to_floor = row + directions[direction[0]][0] * -1
+            column_to_floor = column + directions[direction[0]][1] * -1
+            self.current_map[row_to_floor][column_to_floor] = "f"
+        else:
+            self.current_map[row][column] = "f"
+        row_to_player = row + directions[direction[0]][0]
+        column_to_player = column + directions[direction[0]][1]
+        self.current_map[row_to_player][column_to_player] = "p"
+        self._move_count -= 1
+
+    def redo_move(self):
+        """
+        Method redos last made move.
+        If this is the last made move, does nothing,
+        """
+        case_1 = len(self._moves) != 0 and self._move_count == 0
+        case_2 = self._move_count > 0 and self._move_count != len(self._moves)
+        if case_1 or case_2:
+            self.move(self._moves[self._move_count][0])
+            self._moves.pop()
 
     def display_map(self):
         """

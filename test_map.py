@@ -63,7 +63,7 @@ def test_moves_current_move():
                            ("L", "B"), ("L", "B"), ("R", "N"), ("U", "B"),
                            ("U", "B"), ("D", "N"), ("R", "N"), ("R", "B")]
     assert new_map._moves == moves_actually_made
-    assert new_map._current_move == 12
+    assert new_map._move_count == 12
 
 
 def test_target_coordinates():
@@ -85,3 +85,34 @@ def test_check_if_win():
     assert new_map.move("R") is True
     assert new_map.move("R") is True
     assert new_map.check_if_win() is True
+
+
+def test_undo_move():
+    new_map = Map("maps/map_1.txt")
+    new_map.move("D")
+    new_map.move("R")
+    new_map.move("U")
+    new_map.move("U")
+    new_map.undo_move()
+    new_map.undo_move()
+    new_map.undo_move()
+    assert new_map.undo_move() is None
+    assert new_map.player_position == [4, 5]
+    assert new_map._move_count == 0
+
+
+def test_redo_move():
+    new_map = Map("maps/map_1.txt")
+    new_map.redo_move()
+    new_map.move("D")
+    new_map.move("R")
+    new_map.move("U")
+    new_map.move("U")
+    new_map.undo_move()
+    new_map.undo_move()
+    new_map.undo_move()
+    new_map.redo_move()
+    new_map.redo_move()
+    new_map.redo_move()
+    new_map.redo_move()
+    assert new_map._move_count == 3
