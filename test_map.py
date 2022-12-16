@@ -53,6 +53,19 @@ def test_move():
     assert new_map.move("R") is True
 
 
+def test_moves_current_move():
+    new_map = Map("maps/map_1.txt")
+    moves_to_make = ["D", "R", "U", "U", "L", "D", "L", "D", "L",
+                     "L", "R", "D", "U", "L", "U", "D", "R", "R"]
+    for move in moves_to_make:
+        new_map.move(move)
+    moves_actually_made = [("D", "B"), ("U", "N"), ("U", "N"), ("D", "N"),
+                           ("L", "B"), ("L", "B"), ("R", "N"), ("U", "B"),
+                           ("U", "B"), ("D", "N"), ("R", "N"), ("R", "B")]
+    assert new_map._moves == moves_actually_made
+    assert new_map._current_move == 12
+
+
 def test_target_coordinates():
     new_map = Map("maps/map_1.txt")
     assert new_map._targets == [[1, 4], [3, 7], [4, 2], [6, 5]]

@@ -11,6 +11,12 @@ class Map:
 
     :param targets: targets at start map
     :type current_map: list of lists
+
+    :param moves: moves made so far in the game
+    :type moves: list of touples
+
+    :param current_move: number of moves made
+    :type current_move: int
     """
     def __init__(self, file_location):
         map_file = open(file_location, "r")
@@ -18,6 +24,8 @@ class Map:
         map_file = open(file_location, "r")
         self.current_map = [line.split() for line in map_file]
         self._targets = self.target_coordinates()
+        self._moves = []
+        self._current_move = 0
 
     @property
     def player_position(self):
@@ -87,11 +95,15 @@ class Map:
         if direction in moves:
             row, column = moves[moves.index(direction) - 1]
             if self.check_coordinates([row, column]) == "B":
-                row_to_move_to = row - self.player_position[0]
-                column_to_move_to = column - self.player_position[1]
-                self.current_map[row + row_to_move_to][column + column_to_move_to] = 'b'
-            self.current_map[self.player_position[0]][self.player_position[1]] = 'f'
-            self.current_map[row][column] = 'p'
+                row_move = row - self.player_position[0]
+                column_move = column - self.player_position[1]
+                self.current_map[row + row_move][column + column_move] = "b"
+                self._moves.append((direction, "B"))
+            else:
+                self._moves.append((direction, "N"))
+            self.current_map[self.player_position[0]][self.player_position[1]] = "f"
+            self.current_map[row][column] = "p"
+            self._current_move += 1
             return True
         return False
 
@@ -104,6 +116,14 @@ class Map:
             if self.check_coordinates(coordinates) != "B":
                 return False
         return True
+
+    def undo_move(self):
+        """
+        Method undos last made move.
+        """
+        directions = [['U', [-1, 0], [-2, 0]], ['R', [0, 1], [0, 2]],
+                      ['D', [1, 0], [2, 0]], ['L', [0, -1], [0, -2]]]
+        direction = self._moves[self.current_move - 1]
 
     def display_map(self):
         """
