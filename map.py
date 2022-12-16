@@ -64,34 +64,17 @@ class Map:
         """
         row, column = self.player_position
         moves = []
-        # check up
-        if self.check_coordinates([row - 1, column]) == 'F':
-            moves.append([row - 1, column])
-            moves.append('U')
-        elif self.check_coordinates([row - 1, column]) == 'B' and self.check_coordinates([row - 2, column]) == 'F':
-            moves.append([row - 1, column])
-            moves.append('U')
-        # check right
-        if self.check_coordinates([row, column + 1]) == 'F':
-            moves.append([row, column + 1])
-            moves.append('R')
-        elif self.check_coordinates([row, column + 1]) == 'B' and self.check_coordinates([row, column + 2]) == 'F':
-            moves.append([row, column + 1])
-            moves.append('R')
-        # check down
-        if self.check_coordinates([row + 1, column]) == 'F':
-            moves.append([row + 1, column])
-            moves.append('D')
-        elif self.check_coordinates([row + 1, column]) == 'B' and self.check_coordinates([row + 2, column]) == 'F':
-            moves.append([row + 1, column])
-            moves.append('D')
-        # check left
-        if self.check_coordinates([row, column - 1]) == 'F':
-            moves.append([row, column - 1])
-            moves.append('L')
-        elif self.check_coordinates([row, column - 1]) == 'B' and self.check_coordinates([row, column - 2]) == 'F':
-            moves.append([row, column - 1])
-            moves.append('L')
+        # directions list contains what coordinate player moves and box moves
+        directions = [['U', [-1, 0], [-2, 0]], ['R', [0, 1], [0, 2]],
+                      ['D', [1, 0], [2, 0]], ['L', [0, -1], [0, -2]]]
+        for direction in directions:
+            direction, player, box = direction
+            condition_1 = self.check_coordinates([row + player[0], column + player[1]]) == 'F'
+            condition_2 = self.check_coordinates([row + player[0], column + player[1]]) == 'B'
+            condition_3 = self.check_coordinates([row + box[0], column + box[1]]) == 'F'
+            if condition_1 or (condition_2 and condition_3):
+                moves.append([row + player[0], column + player[1]])
+                moves.append(direction)
         return moves
 
     def move(self, direction):
@@ -127,4 +110,7 @@ class Map:
         Method prints current map for console presentation.
         """
         for row in self.current_map:
-            print(row)
+            row_in_str = ''
+            for tile in row:
+                row_in_str += f'{tile} '
+            print(row_in_str)
