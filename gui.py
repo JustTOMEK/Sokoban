@@ -4,17 +4,17 @@ from PySide2.QtWidgets import QMainWindow
 import sys
 
 from ui_level import Ui_ChooseLevel
+from ui_game import Ui_Game
 
-
-class ChooseLevel(QMainWindow):
+class Game(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.ui = Ui_ChooseLevel()
+        self.ui = Ui_Game()
         self.ui.setupUi(self)
 
 def guiMain(args):
     app = QApplication(args)
-    window =ChooseLevel()
+    window =Game()
     window.show()
     return app.exec_()
 

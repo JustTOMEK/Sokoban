@@ -13,7 +13,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
-class Ui_MainWindow(object):
+class Ui_Game(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
@@ -35,6 +35,9 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
+        
+        
+
         self.label_87 = QLabel(self.frame)
         self.label_87.setObjectName(u"label_87")
 
@@ -593,7 +596,6 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sokoban", None))
         self.label_87.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
@@ -694,10 +696,12 @@ class Ui_MainWindow(object):
         self.label_80.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_69.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_73.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sokoban", None))
         self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"Undo Move", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Redo Move", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
         self.lineEdit.setText(QCoreApplication.translate("MainWindow", u"Score :", None))
+    
     # retranslateUi
 
