@@ -1,6 +1,7 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+from map import Map
 
 
 class Ui_Game(object):
@@ -92,11 +93,23 @@ class Ui_Game(object):
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
-    def retranslateUi(self, MainWindow):
+
+    def load_png(ui_Game):
+        new_map = Map("maps/map_1.txt")
+        letter_to_image = {"w": "tiles_for_pyqt/wall.png",
+                        "B": "tiles_for_pyqt/box_yes.png",
+                        "b": "tiles_for_pyqt/box_not.png",
+                        "p": "tiles_for_pyqt/player_on_floor.png",
+                        "F": "tiles_for_pyqt/target_on_floor.png",
+                        "P": "tiles_for_pyqt/player_on_target.png",
+                        "f": "tiles_for_pyqt/floor.png"}
         for row in range(10):
             for column in range(10):
-                text = str(row * 10 + column)
-                self.tiles[row * 10 + column].setText(QCoreApplication.translate("MainWindow", text, None))
+                pixmap = QPixmap(letter_to_image[new_map.current_map[row][column]])
+                ui_Game.tiles[row * 10 + column].setPixmap(pixmap)
+
+
+    def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sokoban", None))
         self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"Undo Move", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Redo Move", None))
