@@ -5,6 +5,12 @@ from map import Map
 
 
 class Ui_Game(object):
+
+    def __init__(self, map_source):
+        self.source = map_source
+        self.map = Map(map_source)
+
+
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
@@ -55,25 +61,24 @@ class Ui_Game(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.pushButton_2 = QPushButton(self.frame_2)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        
+        self.undo_move = QPushButton(self.frame_2)
+        self.undo_move.clicked.connect(self.undo)
 
-        self.horizontalLayout.addWidget(self.pushButton_2)
+        self.horizontalLayout.addWidget(self.undo_move)
 
-        self.pushButton_3 = QPushButton(self.frame_2)
-        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.reset = QPushButton(self.frame_2)
+        self.reset.clicked.connect(self.reset_game)
 
-        self.horizontalLayout.addWidget(self.pushButton_3)
+        self.horizontalLayout.addWidget(self.reset)
 
-        self.pushButton_4 = QPushButton(self.frame_2)
-        self.pushButton_4.setObjectName(u"pushButton_4")
+        self.quit = QPushButton(self.frame_2)
 
-        self.horizontalLayout.addWidget(self.pushButton_4)
+        self.horizontalLayout.addWidget(self.quit)
 
-        self.pushButton = QPushButton(self.frame_2)
-        self.pushButton.setObjectName(u"pushButton")
+        self.score = QLineEdit(self.frame_2)
 
-        self.horizontalLayout.addWidget(self.pushButton)
+        self.horizontalLayout.addWidget(self.score)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
@@ -87,9 +92,17 @@ class Ui_Game(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
+    def undo(self):
+        self.map.undo_move()
+        self.map.change_box_coordinates()
+        self.load_png()
+    
+    def reset_game(self):
+        self.map = Map(self.source)
+        self.load_png()
 
 
-    def load_png(ui_Game, map_state):
+    def load_png(self):
         letter_to_image = {"w": "tiles_for_pyqt/wall.png",
                         "B": "tiles_for_pyqt/box_yes.png",
                         "b": "tiles_for_pyqt/box_not.png",
@@ -99,17 +112,17 @@ class Ui_Game(object):
                         "f": "tiles_for_pyqt/floor.png"}
         for row in range(10):
             for column in range(10):
-                pixmap = QPixmap(letter_to_image[map_state[row][column]])
-                width = ui_Game.tiles[row * 10 + column].width()
-                height = ui_Game.tiles[row * 10 + column].height()
-                ui_Game.tiles[row * 10 + column].setPixmap(pixmap.scaled(width, height))
+                pixmap = QPixmap(letter_to_image[self.map.current_map[row][column]])
+                width = self.tiles[row * 10 + column].width()
+                height = self.tiles[row * 10 + column].height()
+                self.tiles[row * 10 + column].setPixmap(pixmap.scaled(width, height))
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sokoban", None))
-        self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"Undo Move", None))
-        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Redo Move", None))
-        self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
+        self.undo_move.setText(QCoreApplication.translate("MainWindow", u"Undo Move", None))
+        self.reset.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
+        self.quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
+        self.score.setText(QCoreApplication.translate("MainWindow", u"Score :", None))
     
     # retranslateUi
 

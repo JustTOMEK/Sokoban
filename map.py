@@ -107,6 +107,20 @@ class Map:
             self._move_count += 1
             return True
         return False
+    
+    def change_box_coordinates(self):
+        """
+        Method changes current_state after every move.
+        It makes target tiles capital letter.
+        It makes other tiles lower letter.
+        """
+        for row_number, row in enumerate(self.current_map):
+            for column_number, tile in enumerate(row):
+                if [row_number, column_number] in self._targets:
+                    if tile.islower():
+                        self.current_map[row_number][column_number] = tile.upper()
+                elif tile.isupper():
+                    self.current_map[row_number][column_number] = tile.lower()
 
     def check_if_win(self):
         """
@@ -125,7 +139,7 @@ class Map:
         if self._move_count == 0:
             return None
         directions = {'U': [1, 0], 'R': [0, -1], 'D': [-1, 0], 'L': [0, 1]}
-        direction = self._moves[self._move_count - 1]
+        direction = self._moves[len(self._moves)- self._move_count - 1]
         row, column = self.player_position[0], self.player_position[1]
         if direction[1] == "B":
             self.current_map[row][column] = "b"
@@ -137,18 +151,8 @@ class Map:
         row_to_player = row + directions[direction[0]][0]
         column_to_player = column + directions[direction[0]][1]
         self.current_map[row_to_player][column_to_player] = "p"
+        self._moves.pop()
         self._move_count -= 1
-
-    def redo_move(self):
-        """
-        Method redos last made move.
-        If this is the last made move, does nothing,
-        """
-        case_1 = len(self._moves) != 0 and self._move_count == 0
-        case_2 = self._move_count > 0 and self._move_count != len(self._moves)
-        if case_1 or case_2:
-            self.move(self._moves[self._move_count][0])
-            self._moves.pop()
 
     def display_map(self):
         """

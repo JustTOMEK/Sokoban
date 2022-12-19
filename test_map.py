@@ -101,18 +101,33 @@ def test_undo_move():
     assert new_map._move_count == 0
 
 
-def test_redo_move():
+def test_undo_move_case_1():
     new_map = Map("maps/map_1.txt")
-    new_map.redo_move()
+    new_map.move("L")
+    new_map.move("L")
+    new_map.undo_move()
+    new_map.undo_move()
     new_map.move("D")
+    new_map.undo_move()
+    pass
+
+def test_undo_move_case_2():
+    new_map = Map("maps/map_1.txt")
+    new_map.move("L")
+    new_map.move("L")
+    new_map.undo_move()
+    new_map.undo_move()
+    new_map.move("U")
     new_map.move("R")
+    new_map.undo_move()
+    pass
+
+def test_undo_move_case_3():
+    new_map = Map("maps/map_1.txt")
+    new_map.move("L")
+    new_map.move("L")
+    new_map.undo_move()
     new_map.move("U")
     new_map.move("U")
     new_map.undo_move()
-    new_map.undo_move()
-    new_map.undo_move()
-    new_map.redo_move()
-    new_map.redo_move()
-    new_map.redo_move()
-    new_map.redo_move()
-    assert new_map._move_count == 3
+    pass
