@@ -75,11 +75,6 @@ class Ui_Game(object):
 
         self.horizontalLayout.addWidget(self.pushButton)
 
-        self.lineEdit = QLineEdit(self.frame_2)
-        self.lineEdit.setObjectName(u"lineEdit")
-
-        self.horizontalLayout.addWidget(self.lineEdit)
-
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
@@ -94,8 +89,7 @@ class Ui_Game(object):
     # setupUi
 
 
-    def load_png(ui_Game):
-        new_map = Map("maps/map_1.txt")
+    def load_png(ui_Game, map_state):
         letter_to_image = {"w": "tiles_for_pyqt/wall.png",
                         "B": "tiles_for_pyqt/box_yes.png",
                         "b": "tiles_for_pyqt/box_not.png",
@@ -105,9 +99,10 @@ class Ui_Game(object):
                         "f": "tiles_for_pyqt/floor.png"}
         for row in range(10):
             for column in range(10):
-                pixmap = QPixmap(letter_to_image[new_map.current_map[row][column]])
-                ui_Game.tiles[row * 10 + column].setPixmap(pixmap)
-
+                pixmap = QPixmap(letter_to_image[map_state[row][column]])
+                width = ui_Game.tiles[row * 10 + column].width()
+                height = ui_Game.tiles[row * 10 + column].height()
+                ui_Game.tiles[row * 10 + column].setPixmap(pixmap.scaled(width, height))
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sokoban", None))
@@ -115,7 +110,6 @@ class Ui_Game(object):
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Redo Move", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
-        self.lineEdit.setText(QCoreApplication.translate("MainWindow", u"Score :", None))
     
     # retranslateUi
 
