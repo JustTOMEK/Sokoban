@@ -4,22 +4,24 @@ from PySide2.QtWidgets import *
 from map import Map
 
 
-class Ui_Game(object):
-
-    def __init__(self, map_source):
-        self.source = map_source
-        self.map = Map(map_source)
-
+class UiGame(object):
 
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(880, 724)
-        self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.frame = QFrame(self.centralwidget)
+        self.main_screen = QWidget(MainWindow)
+        self.main_screen.setObjectName(u"centralwidget")
+
+        self.stackedWidget = QStackedWidget(self.main_screen)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.stackedWidget.setGeometry(QRect(70, 50, 641, 441))
+
+        self.game_screen_q = QWidget()
+
+        self.game_screen = QVBoxLayout(self.game_screen_q)
+        self.game_screen.setObjectName(u"verticalLayout_3")
+        self.frame = QFrame(self.game_screen_q)
         self.frame.setObjectName(u"frame")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -46,9 +48,9 @@ class Ui_Game(object):
         self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
 
 
-        self.verticalLayout_3.addWidget(self.frame)
+        self.game_screen.addWidget(self.frame)
 
-        self.frame_2 = QFrame(self.centralwidget)
+        self.frame_2 = QFrame(self.game_screen_q)
         self.frame_2.setObjectName(u"frame_2")
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
@@ -76,7 +78,7 @@ class Ui_Game(object):
 
         self.horizontalLayout.addWidget(self.quit)
 
-        self.score = QLineEdit(self.frame_2)
+        self.score = QLabel(self.frame_2)
 
         self.horizontalLayout.addWidget(self.score)
 
@@ -84,11 +86,58 @@ class Ui_Game(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
 
-        self.verticalLayout_3.addWidget(self.frame_2)
+        self.game_screen.addWidget(self.frame_2)
 
-        MainWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
+
+        self.level_screen_q = QWidget()
+        self.level_screen = QVBoxLayout(self.level_screen_q)
+        self.level_screen.setObjectName(u"verticalLayout")
+        self.horizontalLayout_level = QHBoxLayout()
+        self.horizontalLayout_level.setSpacing(70)
+        self.horizontalLayout_level.setObjectName(u"horizontalLayout")
+        self.horizontalLayout_level.setSizeConstraint(QLayout.SetNoConstraint)
+        self.horizontalLayout_level.setContentsMargins(20, -1, 20, -1)
+
+        self.buttons=[]
+        for button in range(4):
+                self.buttons.append(QPushButton(self.level_screen_q))
+                self.buttons[button].setStyleSheet(u"font-size: 80px;\n"
+                                                "background-color: rgb(236, 221, 11);\n"
+                                                "border-radius:10px;")
+                self.horizontalLayout_level.addWidget(self.buttons[button])
+
+
+        self.level_screen.addLayout(self.horizontalLayout_level)
+
+        self.horizontalLayout_2_level = QHBoxLayout()
+        self.horizontalLayout_2_level.setSpacing(70)
+        self.horizontalLayout_2_level.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2_level.setSizeConstraint(QLayout.SetNoConstraint)
+        self.horizontalLayout_2_level.setContentsMargins(20, -1, 20, -1)
+        
+        for button in range(4, 8):
+                self.buttons.append(QPushButton(self.level_screen_q))
+                self.buttons[button].setStyleSheet(u"font-size: 80px;\n"
+                                                "background-color: rgb(236, 221, 11);\n"
+                                                "border-radius:10px;")
+                self.horizontalLayout_2_level.addWidget(self.buttons[button])
+
+        self.level_screen.addLayout(self.horizontalLayout_2_level)
+
+
+
+
+
+        self.stackedWidget.addWidget(self.level_screen_q)
+        self.stackedWidget.addWidget(self.game_screen_q)
+
+        MainWindow.setCentralWidget(self.main_screen)
+
+        self.retranslateGame(MainWindow)
+        self.retranslateLevel(MainWindow)
+
+
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -96,11 +145,16 @@ class Ui_Game(object):
         self.map.undo_move()
         self.map.change_box_coordinates()
         self.load_png()
+        self.change_score()
     
     def reset_game(self):
         self.map = Map(self.source)
         self.load_png()
+        self.change_score()
 
+    def change_score(self):
+        self.score.setText(f'Score : {self.map._move_count}')
+        
 
     def load_png(self):
         letter_to_image = {"w": "tiles_for_pyqt/wall.png",
@@ -117,12 +171,17 @@ class Ui_Game(object):
                 height = self.tiles[row * 10 + column].height()
                 self.tiles[row * 10 + column].setPixmap(pixmap.scaled(width, height))
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sokoban", None))
-        self.undo_move.setText(QCoreApplication.translate("MainWindow", u"Undo Move", None))
-        self.reset.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
-        self.quit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
-        self.score.setText(QCoreApplication.translate("MainWindow", u"Score :", None))
+    def retranslateGame(self, MainWindow):
+        MainWindow.setWindowTitle("Sokoban")
+        self.undo_move.setText("Undo Move")
+        self.reset.setText("Reset")
+        self.quit.setText("Quit")
+        self.score.setText("Score : 0")
+    
+    def retranslateLevel(self, ChooseLevel):
+        ChooseLevel.setWindowTitle(QCoreApplication.translate("ChooseLevel", u"Sokoban", None))
+        for level, button in enumerate(self.buttons):
+                button.setText(str(level + 1))
     
     # retranslateUi
 
