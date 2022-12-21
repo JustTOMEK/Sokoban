@@ -9,13 +9,16 @@ class UiGame(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(880, 724)
+        MainWindow.setFixedSize(880, 724)
         self.main_screen = QWidget(MainWindow)
         self.main_screen.setObjectName(u"centralwidget")
 
         self.stackedWidget = QStackedWidget(self.main_screen)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(70, 50, 641, 441))
+        
+        self.stackedWidget.setGeometry(QRect(0, 0, 880, 724))
+        self.stackedWidget.setStyleSheet(u"background-color: rgb(0, 0, 0);")
+        
 
         self.game_screen_q = QWidget()
 
@@ -34,6 +37,9 @@ class UiGame(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setHorizontalSpacing(0)
+        self.gridLayout.setVerticalSpacing(0)
+        
         
         self.tiles = []
 
@@ -65,20 +71,33 @@ class UiGame(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         
         self.undo_move = QPushButton(self.frame_2)
+        self.undo_move.setStyleSheet(u"font-size: 20px;\n"
+                                      "background-color: rgb(236, 221, 11);\n"
+                                      "border-radius:10px;")
         self.undo_move.clicked.connect(self.undo)
 
         self.horizontalLayout.addWidget(self.undo_move)
 
         self.reset = QPushButton(self.frame_2)
+        self.reset.setStyleSheet(u"font-size: 20px;\n"
+                                      "background-color: rgb(236, 221, 11);\n"
+                                      "border-radius:10px;")
         self.reset.clicked.connect(self.reset_game)
 
         self.horizontalLayout.addWidget(self.reset)
 
         self.quit = QPushButton(self.frame_2)
+        self.quit.setStyleSheet(u"font-size: 20px;\n"
+                                      "background-color: rgb(236, 221, 11);\n"
+                                      "border-radius:10px;")
 
         self.horizontalLayout.addWidget(self.quit)
 
         self.score = QLabel(self.frame_2)
+        self.score.setAlignment(Qt.AlignCenter)
+        self.score.setStyleSheet(u"font-size: 20px;\n"
+                                      "background-color: rgb(236, 221, 11);\n"
+                                      "border-radius:10px;")
 
         self.horizontalLayout.addWidget(self.score)
 
@@ -91,6 +110,7 @@ class UiGame(object):
 
 
         self.level_screen_q = QWidget()
+        self.level_screen_q.setStyleSheet(u"background-color: rgb(0, 0, 0);")
         self.level_screen = QVBoxLayout(self.level_screen_q)
         self.level_screen.setObjectName(u"verticalLayout")
         self.horizontalLayout_level = QHBoxLayout()
