@@ -174,7 +174,22 @@ class UiGame(object):
 
     def change_score(self):
         self.score.setText(f'Score : {self.map._move_count}')
-        
+    
+    def show_won_game(self):
+        dialog = QMessageBox(self.main_screen)
+        dialog.setText('You won the game')
+        dialog.setWindowTitle('This is the title')
+        dialog.addButton('Next Level', QMessageBox.YesRole)
+        dialog.addButton('Main Menu', QMessageBox.YesRole)
+        dialog.buttonClicked.connect(self.onClicked)
+        dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
+        dialog.exec_()
+    
+    def onClicked(self, btn):
+        if btn.text() == "Next Level":
+            self.stackedWidget.setCurrentWidget(self.game_screen_q)
+        if btn.text() == "Main Menu":
+            self.stackedWidget.setCurrentWidget(self.level_screen_q)
 
     def load_png(self):
         letter_to_image = {"w": "tiles_for_pyqt/wall.png",

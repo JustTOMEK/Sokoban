@@ -1,5 +1,5 @@
 import sys
-from PySide2.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication 
 from PySide2.QtWidgets import QMainWindow
 from PySide2.QtCore import Qt
 
@@ -106,6 +106,8 @@ class MainWindow(QMainWindow):
             self.ui.map.change_box_coordinates()
             self.ui.load_png()
             self.ui.change_score()
+            if self.ui.map.check_if_win():
+                self.ui.show_won_game()
  
     
 
