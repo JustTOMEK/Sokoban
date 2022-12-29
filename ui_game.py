@@ -40,18 +40,7 @@ class UiGame(object):
         self.gridLayout.setHorizontalSpacing(0)
         self.gridLayout.setVerticalSpacing(0)
         
-        
-        self.tiles = []
-
-        for row in range(10):
-            for column in range(10):
-                self.tiles.append(QLabel(self.frame))
-                name = "label_" + str(row + column * 10)
-                self.tiles[row * 10 + column].setObjectName(name)
-                self.gridLayout.addWidget(self.tiles[row * 10 + column], row, column, 1, 1)
-
-
-        self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
+    
 
 
         self.game_screen.addWidget(self.frame)
@@ -167,6 +156,18 @@ class UiGame(object):
         self.load_png()
         self.change_score()
     
+    def map_set_board_size(self):
+        for i in reversed(range(self.gridLayout_3.count())):
+            self.gridLayout_3.removeItem(self.gridLayout_3.itemAt(i))
+        for i in reversed(range(self.gridLayout.count())):
+            self.gridLayout.removeItem(self.gridLayout.itemAt(i))
+        self.tiles = []
+        for row in range(self.map._rows):
+            for column in range(self.map._columns):
+                self.tiles.append(QLabel(self.frame))
+                self.gridLayout.addWidget(self.tiles[row * self.map._columns + column], row, column, 1, 1)
+        self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
+    
     def reset_game(self):
         self.map = Map(self.source)
         self.load_png()
@@ -199,12 +200,13 @@ class UiGame(object):
                         "F": "tiles_for_pyqt/target_on_floor.png",
                         "P": "tiles_for_pyqt/player_on_target.png",
                         "f": "tiles_for_pyqt/floor.png"}
-        for row in range(10):
-            for column in range(10):
+        for row in range(self.map._rows):
+            for column in range(self.map._columns):
                 pixmap = QPixmap(letter_to_image[self.map.current_map[row][column]])
-                width = self.tiles[row * 10 + column].width()
-                height = self.tiles[row * 10 + column].height()
-                self.tiles[row * 10 + column].setPixmap(pixmap.scaled(width, height))
+                width = self.tiles[0].width()
+                height = self.tiles[0].height()
+                self.tiles[row * self.map._columns + column].setPixmap(pixmap.scaled(width, height))
+
 
     def retranslateGame(self, MainWindow):
         MainWindow.setWindowTitle("Sokoban")

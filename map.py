@@ -18,12 +18,20 @@ class Map:
 
     :param move_count: number of moves made
     :type move_count: int
+
+    :param rows: number of rows
+    :type rows: int
+
+    :param columns: number of columns
+    :type columns: int
     """
     def __init__(self, file_location):
         map_file = open(file_location, "r")
         self._start_map = [line.split() for line in map_file]
         map_file = open(file_location, "r")
         self.current_map = [line.split() for line in map_file]
+        self._rows = len(self._start_map)
+        self._columns = len(self._start_map[0])
         self._targets = self.target_coordinates()
         self._moves = []
         self._move_count = 0
@@ -47,7 +55,7 @@ class Map:
         Returns uppercase char.
         """
         row, column = coordinates
-        if row not in range(0, 10) or column not in range(0, 10):
+        if row not in range(0, self._rows) or column not in range(0, self._columns):
             return 'W'
         return self.current_map[row][column].upper()
 

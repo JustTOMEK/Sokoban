@@ -8,26 +8,25 @@ def test_map_create():
 
 def test_map_create_row():
     new_map = Map("maps/map_1.txt")
-    row_0 = ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']
+    row_0 = ['w', 'w', 'F', 'w', 'w', 'w']
     assert new_map._start_map[0] == row_0
     assert new_map.current_map[0] == row_0
 
 
 def test_player_position():
     new_map = Map("maps/map_1.txt")
-    assert new_map.player_position == [4, 5]
+    assert new_map.player_position == [3, 3]
 
 
 def test_available_moves():
     new_map = Map("maps/map_1.txt")
-    assert new_map.available_moves() == [[3, 5], 'U', [5, 5], 'D', [4, 4], 'L']
+    assert new_map.available_moves() == [[2, 3], 'U', [4, 3], 'D', [3, 2], 'L']
 
 
 def test_check_coordinates():
     new_map = Map("maps/map_1.txt")
     assert new_map.check_coordinates([0, 0]) == 'W'
-    assert new_map.check_coordinates([4, 5]) == 'P'
-    assert new_map.check_coordinates([4, 4]) == 'B'
+    assert new_map.check_coordinates([4, 3]) == 'B'
     assert new_map.check_coordinates([10, 10]) == 'W'
 
 
@@ -68,7 +67,7 @@ def test_moves_current_move():
 
 def test_target_coordinates():
     new_map = Map("maps/map_1.txt")
-    assert new_map._targets == [[1, 4], [3, 7], [4, 2], [6, 5]]
+    assert new_map._targets == [[0, 2], [2, 5], [3, 0], [5, 3]]
 
 
 def test_check_if_win():
@@ -97,7 +96,7 @@ def test_undo_move():
     new_map.undo_move()
     new_map.undo_move()
     assert new_map.undo_move() is None
-    assert new_map.player_position == [4, 5]
+    assert new_map.player_position == [3, 3]
     assert new_map._move_count == 0
 
 

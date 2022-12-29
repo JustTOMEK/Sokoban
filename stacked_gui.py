@@ -30,64 +30,72 @@ class MainWindow(QMainWindow):
         self.state = "level"
 
     def choose_level_1(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_1.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_1.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
     
     def choose_level_2(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_2.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_2.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
     
     def choose_level_3(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_3.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_3.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
     
     def choose_level_4(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_4.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_4.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
     
     def choose_level_5(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_5.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_5.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
      
     def choose_level_6(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_6.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_6.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
     
     def choose_level_7(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_7.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_7.txt"
         self.ui.change_score()
         self.ui.load_png()
         self.state = "game"
 
     def choose_level_8(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.map = Map("maps/map_8.txt")
+        self.ui.map_set_board_size()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.game_screen_q)
         self.ui.source = "maps/map_8.txt"
         self.ui.change_score()
         self.ui.load_png()
