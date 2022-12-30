@@ -9,7 +9,7 @@ class UiGame(object):
     def setupUi(self, MainWindow):
 
         self.state = "level"
-        self.unlocked_levels = [1, 1, 1, 1, 1, 1, 1, 1]
+        self.unlocked_levels = [1, 0, 0, 0, 0, 0, 0, 0]
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setFixedSize(880, 724)
@@ -99,17 +99,50 @@ class UiGame(object):
 
         self.game_screen.addWidget(self.frame_2)
 
-
+        # Here starts level screen
 
         self.level_screen_q = QWidget()
         self.level_screen_q.setStyleSheet(u"background-color: rgb(0, 0, 0);")
         self.level_screen = QVBoxLayout(self.level_screen_q)
         self.level_screen.setObjectName(u"verticalLayout")
+
+        self.horizontalLayout_caption = QHBoxLayout()
+        self.horizontalLayout_caption.setSpacing(70)
+        self.horizontalLayout_caption.setObjectName(u"horizontalLayout")
+        self.horizontalLayout_caption.setSizeConstraint(QLayout.SetNoConstraint)
+        self.horizontalLayout_caption.setContentsMargins(20, -1, 20, -1)
+
+        self.choose_caption = QPushButton() 
+        self.choose_caption.setStyleSheet(u"font-size: 80px;\n" "background-color: rgb(250, 0, 0);\n" "border-radius:10px;" "padding :15px;") 
+        self.choose_caption.setText("Choose Level")
+        self.choose_caption.resize(100,100)
+
+
+        self.help = QPushButton()
+        self.help.setStyleSheet(u"font-size: 40px;"
+                                "background-color: rgb(250, 0, 0);"
+                                "border-radius:10px;"
+                                "padding :15px;")
+        self.help.setText("Help")
+        self.help.clicked.connect(self.show_help)
+        
+
+        self.horizontalLayout_caption.addWidget(self.choose_caption)
+        self.horizontalLayout_caption.addWidget(self.help)
+
+
+        self.level_screen.addLayout(self.horizontalLayout_caption)
+
+
+
         self.horizontalLayout_level = QHBoxLayout()
         self.horizontalLayout_level.setSpacing(70)
         self.horizontalLayout_level.setObjectName(u"horizontalLayout")
         self.horizontalLayout_level.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_level.setContentsMargins(20, -1, 20, -1)
+
+
+
 
         self.buttons=[]
         for button in range(4):
@@ -180,6 +213,19 @@ class UiGame(object):
 
     def change_score(self):
         self.score.setText(f'Score : {self.map._move_count}')
+
+    def show_help(self):
+        dialog = QMessageBox(self.main_screen)
+        dialog.setWindowTitle(f'Help')
+        dialog.setText('To finish Sokoban map move all boxes to targets. \n' 
+                       'At the beggining only level 1 is unlocked.\n'
+                       'When level is finished the next one is unlocked.\n'
+                       'Game can be reseted at all times.\n'
+                       'Move can be undone at all times.\n'
+                       'Move in game using WASD keys.\n')
+        dialog.addButton('Back to level selection', QMessageBox.YesRole)
+        dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
+        dialog.exec_()
     
     def show_won_game(self):
         dialog = QMessageBox(self.main_screen)
