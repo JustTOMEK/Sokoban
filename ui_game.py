@@ -2,13 +2,14 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from map import Map
-
+from functools import partial
 
 class UiGame(object):
 
     def setupUi(self, MainWindow):
 
         self.state = "level"
+        self.unlocked_levels = [1, 1, 1, 1, 1, 1, 1, 1]
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setFixedSize(880, 724)
@@ -116,6 +117,7 @@ class UiGame(object):
                 self.buttons[button].setStyleSheet(u"font-size: 80px;\n"
                                                 "background-color: rgb(236, 221, 11);\n"
                                                 "border-radius:10px;")
+                self.buttons[button].clicked.connect(partial(self.choose_level, button + 1))
                 self.horizontalLayout_level.addWidget(self.buttons[button])
 
 
@@ -132,16 +134,8 @@ class UiGame(object):
                 self.buttons[button].setStyleSheet(u"font-size: 80px;\n"
                                                 "background-color: rgb(236, 221, 11);\n"
                                                 "border-radius:10px;")
+                self.buttons[button].clicked.connect(partial(self.choose_level, button + 1))
                 self.horizontalLayout_2_level.addWidget(self.buttons[button])
-        
-        self.buttons[0].clicked.connect(self.choose_level_1)
-        self.buttons[1].clicked.connect(self.choose_level_2)
-        self.buttons[2].clicked.connect(self.choose_level_3)
-        self.buttons[3].clicked.connect(self.choose_level_4)
-        self.buttons[4].clicked.connect(self.choose_level_5)
-        self.buttons[5].clicked.connect(self.choose_level_6)
-        self.buttons[6].clicked.connect(self.choose_level_7)
-        self.buttons[7].clicked.connect(self.choose_level_8)
 
         self.level_screen.addLayout(self.horizontalLayout_2_level)
 
@@ -189,17 +183,28 @@ class UiGame(object):
     
     def show_won_game(self):
         dialog = QMessageBox(self.main_screen)
-        dialog.setText('You won the game')
-        dialog.setWindowTitle('This is the title')
-        dialog.addButton('Next Level', QMessageBox.YesRole)
+        dialog.setWindowTitle(f'You finished level {self.level}')
+        if self.level != 8:
+            self.unlocked_levels[self.level] = 1
+            dialog.addButton('Next Level', QMessageBox.YesRole)
+        else:
+            dialog.setText('There is no next level. You finished the game congratulations.')
         dialog.addButton('Main Menu', QMessageBox.YesRole)
         dialog.buttonClicked.connect(self.onClicked)
         dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
         dialog.exec_()
     
+    def show_not_unlocked(self):
+        dialog = QMessageBox(self.main_screen)
+        dialog.setWindowTitle(f'You have not unlocked this level')
+        dialog.setText('In order to play this level finish all previous ones.')
+        dialog.addButton('Choose another level', QMessageBox.YesRole)
+        dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
+        dialog.exec_()
+
     def onClicked(self, btn):
         if btn.text() == "Next Level":
-            self.stackedWidget.setCurrentWidget(self.game_screen_q)
+            self.next_level(self.level + 1)
         if btn.text() == "Main Menu":
             self.stackedWidget.setCurrentWidget(self.level_screen_q)
 
@@ -218,78 +223,30 @@ class UiGame(object):
                 height = self.tiles[0].height()
                 self.tiles[row * self.map._columns + column].setPixmap(pixmap.scaled(width, height))
     
-    def choose_level_1(self):
-        self.map = Map("maps/map_1.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_1.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
-    
-    def choose_level_2(self):
-        self.map = Map("maps/map_2.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_2.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
-    
-    def choose_level_3(self):
-        self.map = Map("maps/map_3.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_3.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
-    
-    def choose_level_4(self):
-        self.map = Map("maps/map_4.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_4.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
-    
-    def choose_level_5(self):
-        self.map = Map("maps/map_5.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_5.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
-     
-    def choose_level_6(self):
-        self.map = Map("maps/map_6.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_6.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
-    
-    def choose_level_7(self):
-        self.map = Map("maps/map_7.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_7.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
+    def choose_level(self, level):
+        if self.unlocked_levels[level - 1]:
+            self.level = level
+            self.map = Map(f'maps/map_{level}.txt')
+            self.map_set_board_size()
+            self.stackedWidget.setCurrentWidget(self.game_screen_q)
+            self.source = f'maps/map_{level}.txt'
+            self.change_score()
+            self.tiles[0].resize(self.frame.width() / self.map._columns, self.frame.height() / self.map._rows)
+            self.load_png()
+            self.state = "game"
+        else:
+            self.show_not_unlocked()
 
-    def choose_level_8(self):
-        self.map = Map("maps/map_8.txt")
-        self.map_set_board_size()
-        self.stackedWidget.setCurrentWidget(self.game_screen_q)
-        self.source = "maps/map_8.txt"
-        self.change_score()
-        self.load_png()
-        self.state = "game"
 
+    def next_level(self, level):
+        self.level = level
+        self.map = Map(f'maps/map_{level}.txt')
+        self.map_set_board_size()
+        self.source = f'maps/map_{level}.txt'
+        self.change_score()
+        self.state = "game"
+        self.tiles[0].resize(self.frame.width() / self.map._columns, self.frame.height() / self.map._rows)
+        self.load_png()
 
     def retranslateGame(self, MainWindow):
         MainWindow.setWindowTitle("Sokoban")

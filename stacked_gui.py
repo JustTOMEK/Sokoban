@@ -22,6 +22,8 @@ class MainWindow(QMainWindow):
         self.ui.state = "level"
     
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key_B:
+                print(self.ui.unlocked_levels)
         if self.ui.state == "game":
             if event.key() == Qt.Key_W:
                 self.ui.map.move("U")
