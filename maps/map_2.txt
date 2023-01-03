@@ -1,7 +1,5 @@
-w w w w w w w w w w
-w w f f f f f w w w
-w w b w w w f f f w
-w f p f b f f b f w
-w f F F w f b f w w
-w w F F w f f f w w
-w w w w w w w w w w
+w w w w w w w w
+w f f F F b f w
+w p b f f b f w
+w f b F F f f w
+w w w w w w w w

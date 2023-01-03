@@ -1,8 +1,7 @@
-w w w w w w w w
-w w w F F w w w
-w w w f F w w w
-w w f f b F w w
-w w f b f f w w
-w f f w b b f w
-w f f p f f f w
-w w w w w w w w
+w w w w w w w w w w
+w w f f f f f w w w
+w w b w w w f f f w
+w f p f b f f b f w
+w f F F w f b f w w
+w w F F w f f f w w
+w w w w w w w w w w
