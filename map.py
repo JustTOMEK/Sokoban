@@ -161,13 +161,3 @@ class Map:
         self.current_map[row_to_player][column_to_player] = "p"
         self._moves.pop()
         self._move_count -= 1
-
-    def display_map(self):
-        """
-        Method prints current map for console presentation.
-        """
-        for row in self.current_map:
-            row_in_str = ''
-            for tile in row:
-                row_in_str += f'{tile} '
-            print(row_in_str)
