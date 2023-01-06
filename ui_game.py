@@ -190,7 +190,6 @@ class UiGame(object):
     # setupUi
     def undo(self):
         self.map.undo_move()
-        self.map.change_box_coordinates()
         self.load_png()
         self.change_score()
     
@@ -200,19 +199,20 @@ class UiGame(object):
         for i in reversed(range(self.gridLayout.count())):
             self.gridLayout.removeItem(self.gridLayout.itemAt(i))
         self.tiles = []
-        for row in range(self.map._rows):
-            for column in range(self.map._columns):
+        for row in range(self.map.rows()):
+            for column in range(self.map.columns()):
                 self.tiles.append(QLabel(self.frame))
-                self.gridLayout.addWidget(self.tiles[row * self.map._columns + column], row, column, 1, 1)
+                self.gridLayout.addWidget(self.tiles[row * self.map.columns() + column], row, column, 1, 1)
         self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
-    
+
     def reset_game(self):
-        self.map = Map(self.source)
+        file = open(self.source, "r")
+        self.map = Map(file.read())
         self.load_png()
         self.change_score()
 
     def change_score(self):
-        self.score.setText(f'Score : {self.map._move_count}')
+        self.score.setText(f'Score : {self.map.move_count()}')
 
     def show_help(self):
         dialog = QMessageBox(self.main_screen)
@@ -255,16 +255,19 @@ class UiGame(object):
             self.stackedWidget.setCurrentWidget(self.level_screen_q)
 
     def load_png(self):
-        letter_to_image = {"w": "tiles_for_pyqt/wall.png",
-                        "B": "tiles_for_pyqt/box_yes.png",
-                        "b": "tiles_for_pyqt/box_not.png",
-                        "p": "tiles_for_pyqt/player_on_floor.png",
-                        "F": "tiles_for_pyqt/target_on_floor.png",
-                        "P": "tiles_for_pyqt/player_on_target.png",
-                        "f": "tiles_for_pyqt/floor.png"}
-        for row in range(self.map._rows):
-            for column in range(self.map._columns):
-                pixmap = QPixmap(letter_to_image[self.map.current_map[row][column]])
+        no_targets = {"wall": "tiles_for_pyqt/wall.png",
+                      "box": "tiles_for_pyqt/box_not.png",
+                      "player": "tiles_for_pyqt/player_on_floor.png",
+                      "floor": "tiles_for_pyqt/floor.png"}
+        targets = {"box": "tiles_for_pyqt/box_yes.png",
+                   "floor": "tiles_for_pyqt/target_on_floor.png",
+                   "player": "tiles_for_pyqt/player_on_target.png"}
+        for row in range(self.map.rows()):
+            for column in range(self.map.columns()):
+                if self.map.tiles()[row][column].is_target():
+                    pixmap = QPixmap(targets[self.map.tiles()[row][column].type()])
+                else:
+                    pixmap = QPixmap(no_targets[self.map.tiles()[row][column].type()])
                 width = self.tiles[0].width()
                 height = self.tiles[0].height()
                 self.tiles[row * self.map._columns + column].setPixmap(pixmap.scaled(width, height))
@@ -272,12 +275,13 @@ class UiGame(object):
     def choose_level(self, level):
         if self.unlocked_levels[level - 1]:
             self.level = level
-            self.map = Map(f'maps/map_{level}.txt')
+            file = open(f'maps/map_{level}.txt', "r")
+            self.map = Map(file.read())
             self.map_set_board_size()
             self.stackedWidget.setCurrentWidget(self.game_screen_q)
             self.source = f'maps/map_{level}.txt'
             self.change_score()
-            self.tiles[0].resize(self.frame.width() / self.map._columns, self.frame.height() / self.map._rows)
+            self.tiles[0].resize(self.frame.width() / self.map.columns(), self.frame.height() / self.map.rows())
             self.load_png()
             self.state = "game"
         else:
@@ -286,12 +290,13 @@ class UiGame(object):
 
     def next_level(self, level):
         self.level = level
-        self.map = Map(f'maps/map_{level}.txt')
+        file = open(f'maps/map_{level}.txt', "r")
+        self.map = Map(file.read())
         self.map_set_board_size()
         self.source = f'maps/map_{level}.txt'
         self.change_score()
         self.state = "game"
-        self.tiles[0].resize(self.frame.width() / self.map._columns, self.frame.height() / self.map._rows)
+        self.tiles[0].resize(self.frame.width() / self.map.columns(), self.frame.height() / self.map.rows())
         self.load_png()
 
     def retranslateGame(self, MainWindow):

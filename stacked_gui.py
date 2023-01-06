@@ -20,14 +20,13 @@ class MainWindow(QMainWindow):
     def keyPressEvent(self, event):
         if self.ui.state == "game":
             if event.key() == Qt.Key_W:
-                self.ui.map.move("U")
+                self.ui.map.move("Up")
             if event.key() == Qt.Key_S:
-                self.ui.map.move("D")
+                self.ui.map.move("Down")
             if event.key() == Qt.Key_D:
-                self.ui.map.move("R")
+                self.ui.map.move("Right")
             if event.key() == Qt.Key_A:
-                self.ui.map.move("L")
-            self.ui.map.change_box_coordinates()
+                self.ui.map.move("Left")
             self.ui.load_png()
             self.ui.change_score()
             if self.ui.map.check_if_win():
