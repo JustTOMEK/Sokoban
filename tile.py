@@ -34,14 +34,19 @@ class Tile:
         return self._is_target
 
     def set_type(self, new_type):
-        if not isinstance(new_type, str):
-            raise TypeError("type has to be a char")
-        if len(new_type) != 1:
-            raise TypeError("type has to be a char")
-        if new_type == "W":
-            raise ValueError("wall can not be a target")
-        self._type = self.full_type(new_type.lower())
-        self._is_target = new_type.isupper()
+        if new_type not in ["wall", "floor", "player", "box"]:
+            raise ValueError("Wrong new_type")
+        self._type = new_type
 
     def type(self):
         return self._type
+
+
+def swap_tiles(tile_1, tile_2):
+    if not isinstance(tile_1, Tile) or not isinstance(tile_2, Tile):
+        raise TypeError("tiles have to be tile objects")
+    if tile_1.type() == "wall" or tile_2.type() == "wall":
+        raise ValueError("Walls cannot be swapped")
+    tile_1_type = tile_1.type()
+    tile_1.set_type(tile_2.type())
+    tile_2.set_type(tile_1_type)

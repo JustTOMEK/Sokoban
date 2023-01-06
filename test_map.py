@@ -1,132 +1,133 @@
 from map import Map
+from pytest import raises
+map_in_str = 'w w F w w w\nw w f w w w\nw w b f b F\nF f b p w w\nw w w b w w\nw w w F w w'
 
 
 def test_map_create():
-    new_map = Map("maps/map_1.txt")
-    assert new_map._start_map == new_map.current_map
+    new_map = Map(map_in_str)
+    assert new_map.columns() == 6
+    assert new_map.rows() == 6
 
 
-def test_map_create_row():
-    new_map = Map("maps/map_1.txt")
-    row_0 = ['w', 'w', 'F', 'w', 'w', 'w']
-    assert new_map._start_map[0] == row_0
-    assert new_map.current_map[0] == row_0
+def test_create_not_rectangle_map():
+    with raises(ValueError):
+        Map("w w w\nw w w\n w w w w")
+
+
+def test_map_first_row():
+    new_map = Map(map_in_str)
+    row_0 = ['wall', 'wall', 'floor', 'wall', 'wall', 'wall']
+    for tile_number, tile in enumerate(new_map.tiles()[0]):
+        assert tile.type() == row_0[tile_number]
 
 
 def test_player_position():
-    new_map = Map("maps/map_1.txt")
-    assert new_map.player_position == [3, 3]
-
-
-def test_available_moves():
-    new_map = Map("maps/map_1.txt")
-    assert new_map.available_moves() == [[2, 3], 'U', [4, 3], 'D', [3, 2], 'L']
+    new_map = Map(map_in_str)
+    assert new_map.player_position() == [3, 3]
 
 
 def test_check_coordinates():
-    new_map = Map("maps/map_1.txt")
-    assert new_map.check_coordinates([0, 0]) == 'W'
-    assert new_map.check_coordinates([4, 3]) == 'B'
-    assert new_map.check_coordinates([10, 10]) == 'W'
+    new_map = Map(map_in_str)
+    assert new_map.check_coordinates((0, 0)) == 'wall'
 
 
-def test_move():
-    new_map = Map("maps/map_1.txt")
-    assert new_map.move("D") is True
-    assert new_map.move("R") is False
-    assert new_map.move("U") is True
-    assert new_map.move("U") is True
-    assert new_map.move("L") is False
-    assert new_map.move("D") is True
-    assert new_map.move("L") is True
-    assert new_map.move("D") is False
-    assert new_map.move("L") is True
-    assert new_map.move("L") is False
-    assert new_map.move("R") is True
-    assert new_map.move("D") is False
-    assert new_map.move("U") is True
-    assert new_map.move("L") is False
-    assert new_map.move("U") is True
-    assert new_map.move("D") is True
-    assert new_map.move("R") is True
-    assert new_map.move("R") is True
+def test_check_coordinates_not_tuple():
+    new_map = Map(map_in_str)
+    with raises(TypeError):
+        new_map.check_coordinates([0, 0])
 
 
-def test_moves_current_move():
-    new_map = Map("maps/map_1.txt")
-    moves_to_make = ["D", "R", "U", "U", "L", "D", "L", "D", "L",
-                     "L", "R", "D", "U", "L", "U", "D", "R", "R"]
-    for move in moves_to_make:
-        new_map.move(move)
-    moves_actually_made = [("D", "B"), ("U", "N"), ("U", "N"), ("D", "N"),
-                           ("L", "B"), ("L", "B"), ("R", "N"), ("U", "B"),
-                           ("U", "B"), ("D", "N"), ("R", "N"), ("R", "B")]
-    assert new_map._moves == moves_actually_made
-    assert new_map._move_count == 12
+def test_check_data_not_int():
+    new_map = Map(map_in_str)
+    with raises(TypeError):
+        new_map.check_coordinates((0, "0"))
+
+
+def test_check_data_too_long():
+    new_map = Map(map_in_str)
+    with raises(TypeError):
+        new_map.check_coordinates((0, 0, 0))
 
 
 def test_target_coordinates():
-    new_map = Map("maps/map_1.txt")
-    assert new_map._targets == [[0, 2], [2, 5], [3, 0], [5, 3]]
+    new_map = Map(map_in_str)
+    assert new_map._targets == [(0, 2), (2, 5), (3, 0), (5, 3)]
+
+
+def test_available_moves():
+    new_map = Map(map_in_str)
+    assert len(new_map.available_moves()) == 3
+
+
+def test_available_moves_right_illegal():
+    new_map = Map(map_in_str)
+    for move in new_map.available_moves():
+        assert move._direction != "Right"
+
+
+def test_move_box_move():
+    new_map = Map(map_in_str)
+    new_map.move("Down")
+    assert new_map.tiles()[3][3].type() == "floor"
+    assert new_map.tiles()[4][3].type() == "player"
+    assert new_map.tiles()[5][3].type() == "box"
+
+
+def test_move_normal():
+    new_map = Map(map_in_str)
+    new_map.move("Up")
+    assert new_map.tiles()[3][3].type() == "floor"
+    assert new_map.tiles()[2][3].type() == "player"
+
+
+def test_move_if_can_go_in_walls():
+    new_map = Map(map_in_str)
+    assert new_map.move("Down") is True
+    assert new_map.move("Right") is False
+    assert new_map.move("Up") is True
+    assert new_map.move("Up") is True
+    assert new_map.move("Left") is False
 
 
 def test_check_if_win():
-    new_map = Map("maps/map_1.txt")
+    new_map = Map(map_in_str)
     assert new_map.check_if_win() is False
-    assert new_map.move("D") is True
-    assert new_map.move("U") is True
-    assert new_map.move("L") is True
-    assert new_map.move("L") is True
-    assert new_map.move("R") is True
-    assert new_map.move("U") is True
-    assert new_map.move("U") is True
-    assert new_map.move("D") is True
-    assert new_map.move("R") is True
-    assert new_map.move("R") is True
+    assert new_map.move("Down")
+    assert new_map.move("Up")
+    assert new_map.move("Left")
+    assert new_map.move("Left")
+    assert new_map.move("Right")
+    assert new_map.move("Up")
+    assert new_map.move("Up")
+    assert new_map.move("Down")
+    assert new_map.move("Right")
+    assert new_map.move("Right")
     assert new_map.check_if_win() is True
 
 
 def test_undo_move():
-    new_map = Map("maps/map_1.txt")
-    new_map.move("D")
-    new_map.move("R")
-    new_map.move("U")
-    new_map.move("U")
+    new_map = Map(map_in_str)
+    new_map.move("Down")
+    new_map.move("Right")
+    new_map.move("Up")
+    new_map.move("Up")
     new_map.undo_move()
     new_map.undo_move()
     new_map.undo_move()
     assert new_map.undo_move() is None
-    assert new_map.player_position == [3, 3]
-    assert new_map._move_count == 0
+    assert new_map.player_position() == [3, 3]
+    assert new_map.move_count() == 0
 
 
 def test_undo_move_case_1():
-    new_map = Map("maps/map_1.txt")
-    new_map.move("L")
-    new_map.move("L")
+    new_map = Map(map_in_str)
+    new_map.move("Left")
+    new_map.move("Left")
     new_map.undo_move()
     new_map.undo_move()
-    new_map.move("D")
+    new_map.move("Down")
     new_map.undo_move()
-    pass
-
-def test_undo_move_case_2():
-    new_map = Map("maps/map_1.txt")
-    new_map.move("L")
-    new_map.move("L")
-    new_map.undo_move()
-    new_map.undo_move()
-    new_map.move("U")
-    new_map.move("R")
-    new_map.undo_move()
-    pass
-
-def test_undo_move_case_3():
-    new_map = Map("maps/map_1.txt")
-    new_map.move("L")
-    new_map.move("L")
-    new_map.undo_move()
-    new_map.move("U")
-    new_map.move("U")
-    new_map.undo_move()
-    pass
+    assert new_map.check_coordinates((3, 3)) == "player"
+    assert new_map.check_coordinates((3, 2)) == "box"
+    assert new_map.check_coordinates((3, 1)) == "floor"
+    assert new_map.check_coordinates((3, 0)) == "floor"

@@ -1,20 +1,18 @@
+from tile import Tile, swap_tiles
+from move import Move
+
+
 class Map:
     """
     Class map.
-    Takes file_location, that is str representing file path.
+    Takes map_str, that is str created by file.read().
     Contains attributes:
 
-    :param start_map: start of a level map never changes
-    :type start_map: list of lists
-
-    :param current_map: current state of a map
-    :type current_map: list of lists
+    :param tiles: current state of a map
+    :type tiles: list of lists of tiles
 
     :param targets: targets at start map
-    :type current_map: list of lists
-
-    :param moves: moves made so far in the game
-    :type moves: list of touples
+    :type targets: list of lists
 
     :param move_count: number of moves made
     :type move_count: int
@@ -24,52 +22,91 @@ class Map:
 
     :param columns: number of columns
     :type columns: int
+
+    :param moves: list of moves made so far
+    :type moves: list of move objects
     """
-    def __init__(self, file_location):
-        map_file = open(file_location, "r")
-        self._start_map = [line.split() for line in map_file]
-        map_file = open(file_location, "r")
-        self.current_map = [line.split() for line in map_file]
-        self._rows = len(self._start_map)
-        self._columns = len(self._start_map[0])
+    def __init__(self, map_str):
+        self._tiles = self.str_map_to_tiles(map_str.replace(" ", ""))
+        self._rows = len(self.tiles())
+        self._columns = len(self.tiles()[0])
         self._targets = self.target_coordinates()
         self._moves = []
         self._move_count = 0
 
-    @property
+    def str_map_to_tiles(self, map_in_str):
+        tile_map = [[]]
+        row_number = 0
+        for char in map_in_str:
+            if char == "\n":
+                row_number += 1
+                tile_map.append([])
+            else:
+                tile_map[row_number].append(Tile(char))
+        lengths_of_rows = set()
+        for row in tile_map:
+            lengths_of_rows.add(len(row))
+        if len(lengths_of_rows) != 1:
+            raise ValueError("Map has to be rectangle")
+        return tile_map
+
+    def move_count(self):
+        return self._move_count
+
+    def moves(self):
+        return self._moves
+
+    def tiles(self):
+        return self._tiles
+
+    def columns(self):
+        return self._columns
+
+    def rows(self):
+        return self._rows
+
+    def targets(self):
+        return self._targets
+
     def player_position(self):
         """
         :property player_position: position of a player
         :type player_position: two element list [row, column]
         """
-        for number, row in enumerate(self.current_map):
-            if 'p' in row:
-                return [number, row.index('p')]
-            elif 'P' in row:
-                return [number, row.index('P')]
+        for row_number, row in enumerate(self.tiles()):
+            for column_number, tile in enumerate(row):
+                if tile.type() == "player":
+                    return [row_number, column_number]
 
     def check_coordinates(self, coordinates):
         """
+        takes data in two int touple (1, 2)
         Checks what is at given coordinates.
-        Returns char if coordinates out of map returns floor.
-        Returns uppercase char.
+        Returns type of tile at coordinates
         """
+        if not isinstance(coordinates, tuple):
+            raise TypeError("coordinates has to be 2 int tuple")
+        elif len(coordinates) != 2:
+            raise TypeError("coordinates has to be 2 int tuple")
         row, column = coordinates
+        if not isinstance(row, int) or not isinstance(column, int):
+            raise TypeError("coordinates has to be 2 int tuple")
         if row not in range(0, self._rows) or column not in range(0, self._columns):
-            return 'W'
-        return self.current_map[row][column].upper()
+            return ValueError("row and column have to be in map range")
+        return self.tiles()[row][column].type()
 
     def target_coordinates(self):
         """
         Method target_coordinates, check where are targets
         Returns list of coordinates  that are targets
-        [[0,1], [0,2], [3,0]]
+        list is sorted by row, the column
+        [(0,1), (0,2), (3,0)]
         """
         targets = []
-        for row_number, row in enumerate(self._start_map):
+        for row_number, row in enumerate(self.tiles()):
             for column_number, tile in enumerate(row):
-                if tile.isupper():
-                    targets.append([row_number, column_number])
+                if tile.is_target():
+                    targets.append((row_number, column_number))
         return targets
 
     def available_moves(self):
@@ -79,64 +116,52 @@ class Map:
         [[0,1], 'R', [0,2], 'L', [3,0], 'U']
         Checks in order up, right, down, left
         """
-        row, column = self.player_position
+        player_row, player_column = self.player_position()
         moves = []
         # directions list contains what coordinate player moves and box moves
-        directions = [['U', [-1, 0], [-2, 0]], ['R', [0, 1], [0, 2]],
-                      ['D', [1, 0], [2, 0]], ['L', [0, -1], [0, -2]]]
+        directions = [['Up', [-1, 0], [-2, 0]], ['Right', [0, 1], [0, 2]],
+                      ['Down', [1, 0], [2, 0]], ['Left', [0, -1], [0, -2]]]
         for direction in directions:
             direction, player, box = direction
-            condition_1 = self.check_coordinates([row + player[0], column + player[1]]) == 'F'
-            condition_2 = self.check_coordinates([row + player[0], column + player[1]]) == 'B'
-            condition_3 = self.check_coordinates([row + box[0], column + box[1]]) == 'F'
-            if condition_1 or (condition_2 and condition_3):
-                moves.append([row + player[0], column + player[1]])
-                moves.append(direction)
+            condition_normal = self.check_coordinates((player_row + player[0], player_column + player[1])) == 'floor'
+            condition__box_one = self.check_coordinates((player_row + player[0], player_column + player[1])) == 'box'
+            condition_box_two = self.check_coordinates((player_row + box[0], player_column + box[1])) == 'floor'
+            if condition_normal:
+                moves.append(Move("normal", direction, (player_row, player_column), (player_row + player[0], player_column + player[1])))
+            if condition__box_one and condition_box_two:
+                moves.append(Move("box_move", direction, (player_row, player_column), (player_row + player[0], player_column + player[1]), (player_row + box[0], player_column + box[1])))
         return moves
 
     def move(self, direction):
         """
         Method moves player in given direction if move is legal.
         If move involves moving box, it will also move box.
-        Takes char direction U, R, D, L
+        Takes direction Up, Right, Down, Left
         """
-        moves = self.available_moves()
-        if direction in moves:
-            row, column = moves[moves.index(direction) - 1]
-            if self.check_coordinates([row, column]) == "B":
-                row_move = row - self.player_position[0]
-                column_move = column - self.player_position[1]
-                self.current_map[row + row_move][column + column_move] = "b"
-                self._moves.append((direction, "B"))
-            else:
-                self._moves.append((direction, "N"))
-            self.current_map[self.player_position[0]][self.player_position[1]] = "f"
-            self.current_map[row][column] = "p"
-            self._move_count += 1
-            return True
+        if direction not in ["Up", "Right", "Left", "Down"]:
+            raise ValueError("Wrong Direction")
+        for move in self.available_moves():
+            if move._direction == direction:
+                player_row, player_column = move.player_was_at()
+                player_to_row, player_to_column = move.player_moves_to()
+                if move.type() == "normal":
+                    swap_tiles(self.tiles()[player_row][player_column], self.tiles()[player_to_row][player_to_column])
+                elif move.type() == "box_move":
+                    box_to_row, box_to_column = move.box_moves_to()
+                    swap_tiles(self.tiles()[player_to_row][player_to_column], self.tiles()[box_to_row][box_to_column])
+                    swap_tiles(self.tiles()[player_row][player_column], self.tiles()[player_to_row][player_to_column])
+                self._moves.append(move)
+                self._move_count += 1
+                return True
         return False
-    
-    def change_box_coordinates(self):
-        """
-        Method changes current_state after every move.
-        It makes target tiles capital letter.
-        It makes other tiles lower letter.
-        """
-        for row_number, row in enumerate(self.current_map):
-            for column_number, tile in enumerate(row):
-                if [row_number, column_number] in self._targets:
-                    if tile.islower():
-                        self.current_map[row_number][column_number] = tile.upper()
-                elif tile.isupper():
-                    self.current_map[row_number][column_number] = tile.lower()
 
     def check_if_win(self):
         """
         Method checks if game on current map has ended.
-        For map to end boxes have to be on every targer coordinate
+        For map to end every target coordinate tile has to be a box
         """
-        for coordinates in self._targets:
-            if self.check_coordinates(coordinates) != "B":
+        for row, column in self.targets():
+            if self.tiles()[row][column].type() != "box":
                 return False
         return True
 
@@ -146,18 +171,13 @@ class Map:
         """
         if self._move_count == 0:
             return None
-        directions = {'U': [1, 0], 'R': [0, -1], 'D': [-1, 0], 'L': [0, 1]}
-        direction = self._moves[len(self._moves)- self._move_count - 1]
-        row, column = self.player_position[0], self.player_position[1]
-        if direction[1] == "B":
-            self.current_map[row][column] = "b"
-            row_to_floor = row + directions[direction[0]][0] * -1
-            column_to_floor = column + directions[direction[0]][1] * -1
-            self.current_map[row_to_floor][column_to_floor] = "f"
-        else:
-            self.current_map[row][column] = "f"
-        row_to_player = row + directions[direction[0]][0]
-        column_to_player = column + directions[direction[0]][1]
-        self.current_map[row_to_player][column_to_player] = "p"
-        self._moves.pop()
+        move = self._moves.pop()
+        player_row, player_column = move.player_was_at()
+        player_to_row, player_to_column = move.player_moves_to()
+        if move.type() == "normal":
+            swap_tiles(self.tiles()[player_row][player_column], self.tiles()[player_to_row][player_to_column])
+        elif move.type() == "box_move":
+            box_to_row, box_to_column = move.box_moves_to()
+            swap_tiles(self.tiles()[player_to_row][player_to_column], self.tiles()[box_to_row][box_to_column])
+            swap_tiles(self.tiles()[player_row][player_column], self.tiles()[box_to_row][box_to_column])
         self._move_count -= 1

@@ -1,4 +1,4 @@
-from tile import Tile
+from tile import Tile, swap_tiles
 from pytest import raises
 
 
@@ -44,14 +44,14 @@ def test_is_target():
 
 def test_set_type():
     new_tile = Tile("F")
-    new_tile.set_type("w")
+    new_tile.set_type("wall")
     assert new_tile.type() == "wall"
 
 
 def test_set_wrong_type():
     new_tile = Tile("F")
-    with raises(TypeError):
-        new_tile.set_type("z")
+    with raises(ValueError):
+        new_tile.set_type("F")
 
 
 def test_set_wall_target():
@@ -60,8 +60,18 @@ def test_set_wall_target():
         new_tile.set_type("W")
 
 
-def test_change_is_target():
-    new_tile = Tile("f")
-    assert not new_tile.is_target()
-    new_tile.set_type("B")
-    assert new_tile.is_target()
+def test_swap_tiles():
+    tile_1 = Tile("F")
+    tile_2 = Tile("p")
+    swap_tiles(tile_1, tile_2)
+    assert tile_1.type() == "player"
+    assert tile_2.type() == "floor"
+    assert tile_1.is_target()
+    assert not tile_2.is_target()
+
+
+def test_swap_not_wall_with_wall():
+    tile_1 = Tile("F")
+    tile_2 = Tile("w")
+    with raises(ValueError):
+        swap_tiles(tile_1, tile_2)
