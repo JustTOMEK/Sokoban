@@ -15,21 +15,15 @@ class UiGame(object):
     def setupUi(self, MainWindow):
         self.state = "level"
         self.unlocked_levels = [1, 0, 0, 0, 0, 0, 0, 0]
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
         MainWindow.setFixedSize(880, 724)
         self.main_screen = QWidget(MainWindow)
-        self.main_screen.setObjectName(u"centralwidget")
         self.stackedWidget = QStackedWidget(self.main_screen)
-        self.stackedWidget.setObjectName(u"stackedWidget")
         self.stackedWidget.setGeometry(QRect(0, 0, 880, 724))
         self.stackedWidget.setStyleSheet(u"background-color: rgb(0, 0, 0);")
         # Here start game_screen widgets
         self.game_screen_q = QWidget()
         self.game_screen = QVBoxLayout(self.game_screen_q)
-        self.game_screen.setObjectName(u"verticalLayout_3")
         self.frame = QFrame(self.game_screen_q)
-        self.frame.setObjectName(u"frame")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -38,14 +32,11 @@ class UiGame(object):
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.gridLayout_3 = QGridLayout(self.frame)
-        self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout = QGridLayout()
-        self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setHorizontalSpacing(0)
         self.gridLayout.setVerticalSpacing(0)
         self.game_screen.addWidget(self.frame)
         self.frame_2 = QFrame(self.game_screen_q)
-        self.frame_2.setObjectName(u"frame_2")
         sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
@@ -54,9 +45,7 @@ class UiGame(object):
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.frame_2)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.undo_move = QPushButton(self.frame_2)
         self.undo_move.setStyleSheet(u"font-size: 20px;\n"
                                      "background-color: rgb(236, 221, 11);\n"
@@ -88,10 +77,8 @@ class UiGame(object):
         self.level_screen_q = QWidget()
         self.level_screen_q.setStyleSheet(u"background-color: rgb(0, 0, 0);")
         self.level_screen = QVBoxLayout(self.level_screen_q)
-        self.level_screen.setObjectName(u"verticalLayout")
         self.horizontalLayout_caption = QHBoxLayout()
         self.horizontalLayout_caption.setSpacing(70)
-        self.horizontalLayout_caption.setObjectName(u"horizontalLayout")
         self.horizontalLayout_caption.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_caption.setContentsMargins(20, -1, 20, -1)
         self.choose_caption = QPushButton()
@@ -112,7 +99,6 @@ class UiGame(object):
         self.level_screen.addLayout(self.horizontalLayout_caption)
         self.horizontalLayout_level = QHBoxLayout()
         self.horizontalLayout_level.setSpacing(70)
-        self.horizontalLayout_level.setObjectName(u"horizontalLayout")
         self.horizontalLayout_level.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_level.setContentsMargins(20, -1, 20, -1)
         self.buttons = []
@@ -126,7 +112,6 @@ class UiGame(object):
         self.level_screen.addLayout(self.horizontalLayout_level)
         self.horizontalLayout_2_level = QHBoxLayout()
         self.horizontalLayout_2_level.setSpacing(70)
-        self.horizontalLayout_2_level.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2_level.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_2_level.setContentsMargins(20, -1, 20, -1)
         for button in range(4, 8):
