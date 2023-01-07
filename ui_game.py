@@ -1,4 +1,4 @@
-from PySide2.QtCore import QRect, QCoreApplication
+from PySide2.QtCore import QRect
 from PySide2.QtGui import Qt, QPixmap
 from PySide2.QtWidgets import (QWidget, QSizePolicy, QStackedWidget,
                                QVBoxLayout, QFrame, QGridLayout,
@@ -12,9 +12,10 @@ from functools import partial
 
 class UiGame(object):
 
-    def setupUi(self, MainWindow):
+    def create_widgets(self, MainWindow):
         self.state = "level"
         self.unlocked_levels = [1, 0, 0, 0, 0, 0, 0, 0]
+        MainWindow.setWindowTitle("Sokoban")
         MainWindow.setFixedSize(880, 724)
         self.main_screen = QWidget(MainWindow)
         self.stackedWidget = QStackedWidget(self.main_screen)
@@ -51,6 +52,7 @@ class UiGame(object):
                                      "background-color: rgb(236, 221, 11);\n"
                                      "border-radius:10px;")
         self.undo_move.clicked.connect(self.undo)
+        self.undo_move.setText("Undo Move")
         self.horizontalLayout.addWidget(self.undo_move)
 
         self.reset = QPushButton(self.frame_2)
@@ -58,18 +60,21 @@ class UiGame(object):
                                  "background-color: rgb(236, 221, 11);\n"
                                  "border-radius:10px;")
         self.reset.clicked.connect(self.reset_game)
+        self.reset.setText("Reset")
         self.horizontalLayout.addWidget(self.reset)
         self.quit = QPushButton(self.frame_2)
         self.quit.setStyleSheet(u"font-size: 20px;\n"
                                 "background-color: rgb(236, 221, 11);\n"
                                 "border-radius:10px;")
         self.horizontalLayout.addWidget(self.quit)
+        self.quit.setText("Quit")
         self.quit.clicked.connect(self.back_to_level)
         self.score = QLabel(self.frame_2)
         self.score.setAlignment(Qt.AlignCenter)
         self.score.setStyleSheet(u"font-size: 20px;\n"
                                  "background-color: rgb(236, 221, 11);\n"
                                  "border-radius:10px;")
+        self.score.setText("Score : 0")
         self.horizontalLayout.addWidget(self.score)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.game_screen.addWidget(self.frame_2)
@@ -109,6 +114,7 @@ class UiGame(object):
                                                "border-radius:10px;")
             self.buttons[button].clicked.connect(partial(self.choose_level, button + 1))
             self.horizontalLayout_level.addWidget(self.buttons[button])
+            self.buttons[button].setText(str(button + 1))
         self.level_screen.addLayout(self.horizontalLayout_level)
         self.horizontalLayout_2_level = QHBoxLayout()
         self.horizontalLayout_2_level.setSpacing(70)
@@ -121,23 +127,35 @@ class UiGame(object):
                                                "border-radius:10px;")
             self.buttons[button].clicked.connect(partial(self.choose_level, button + 1))
             self.horizontalLayout_2_level.addWidget(self.buttons[button])
+            self.buttons[button].setText(str(button + 1))
         self.level_screen.addLayout(self.horizontalLayout_2_level)
         self.stackedWidget.addWidget(self.level_screen_q)
         self.stackedWidget.addWidget(self.game_screen_q)
         MainWindow.setCentralWidget(self.main_screen)
-        self.retranslateGame(MainWindow)
-        self.retranslateLevel(MainWindow)
+        self.stackedWidget.setCurrentWidget(self.level_screen_q)
+
 
     def back_to_level(self):
+        """
+        This Function takes player back to level screen, when
+        quit is clicked in game screen.
+        """
         self.stackedWidget.setCurrentWidget(self.level_screen_q)
         self.state = "level"
 
     def undo(self):
+        """
+        Undoes a move, when undo button is clicked.
+        """
         self.map.undo_move()
         self.load_png()
         self.change_score()
 
     def map_set_board_size(self):
+        """
+        Deletes all labels from level screen and adds
+        row*column new labels according to map size.
+        """
         for i in reversed(range(self.gridLayout_3.count())):
             self.gridLayout_3.removeItem(self.gridLayout_3.itemAt(i))
         for i in reversed(range(self.gridLayout.count())):
@@ -150,15 +168,24 @@ class UiGame(object):
         self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
 
     def reset_game(self):
+        """
+        Resets, when reset button clicked.
+        """
         file = open(self.source, "r")
         self.map = Map(file.read())
         self.load_png()
         self.change_score()
 
     def change_score(self):
+        """
+        Changes score on score caption to move_count.
+        """
         self.score.setText(f'Score : {self.map.move_count()}')
 
     def show_help(self):
+        """
+        Opens Message box when help button clicked.
+        """
         dialog = QMessageBox(self.main_screen)
         dialog.setWindowTitle("Help")
         dialog.setText('To finish Sokoban map move all boxes to targets. \n'
@@ -172,6 +199,10 @@ class UiGame(object):
         dialog.exec_()
 
     def show_won_game(self):
+        """
+        Opens Message box when game finished.
+        It ables player to go to next level or go to level choose screen.
+        """
         dialog = QMessageBox(self.main_screen)
         dialog.setWindowTitle(f'You finished level {self.level}')
         if self.level != 8:
@@ -180,11 +211,14 @@ class UiGame(object):
         else:
             dialog.setText('There is no next level. You finished the game congratulations.')
         dialog.addButton('Main Menu', QMessageBox.YesRole)
-        dialog.buttonClicked.connect(self.onClicked)
+        dialog.buttonClicked.connect(self.won_game_on_clicked)
         dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
         dialog.exec_()
 
     def show_not_unlocked(self):
+        """
+        Opens Message box when locked level button clicked.
+        """
         dialog = QMessageBox(self.main_screen)
         dialog.setWindowTitle("You have not unlocked this level")
         dialog.setText('In order to play this level finish all previous ones.')
@@ -192,13 +226,20 @@ class UiGame(object):
         dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
         dialog.exec_()
 
-    def onClicked(self, btn):
+    def won_game_on_clicked(self, btn):
+        """
+        Assigns functions to won game MessageBox.
+        """
         if btn.text() == "Next Level":
             self.next_level(self.level + 1)
         if btn.text() == "Main Menu":
             self.stackedWidget.setCurrentWidget(self.level_screen_q)
 
     def load_png(self):
+        """
+        Reads map.tiles() and assigns a QPixmap to tile at according postion.
+        Sets QPixmap according to tile.type().
+        """
         no_targets = {"wall": "tiles_for_pyqt/wall.png",
                       "box": "tiles_for_pyqt/box_not.png",
                       "player": "tiles_for_pyqt/player_on_floor.png",
@@ -217,6 +258,10 @@ class UiGame(object):
                 self.tiles[row * self.map._columns + column].setPixmap(pixmap.scaled(width, height))
 
     def choose_level(self, level):
+        """
+        When level button clicks changes screen to according level.
+        If level locked shows message box.
+        """
         if self.unlocked_levels[level - 1]:
             self.level = level
             file = open(f'maps/map_{level}.txt', "r")
@@ -232,6 +277,9 @@ class UiGame(object):
             self.show_not_unlocked()
 
     def next_level(self, level):
+        """
+        When level finished and nex_level clicked switches tiles to next level tiles.
+        """
         self.level = level
         file = open(f'maps/map_{level}.txt', "r")
         self.map = Map(file.read())
@@ -241,15 +289,3 @@ class UiGame(object):
         self.state = "game"
         self.tiles[0].resize(self.frame.width() / self.map.columns(), self.frame.height() / self.map.rows())
         self.load_png()
-
-    def retranslateGame(self, MainWindow):
-        MainWindow.setWindowTitle("Sokoban")
-        self.undo_move.setText("Undo Move")
-        self.reset.setText("Reset")
-        self.quit.setText("Quit")
-        self.score.setText("Score : 0")
-
-    def retranslateLevel(self, ChooseLevel):
-        ChooseLevel.setWindowTitle(QCoreApplication.translate("ChooseLevel", u"Sokoban", None))
-        for level, button in enumerate(self.buttons):
-            button.setText(str(level + 1))

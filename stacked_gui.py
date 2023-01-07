@@ -9,8 +9,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = UiGame()
-        self.ui.setupUi(self)
-        self.ui.stackedWidget.setCurrentWidget(self.ui.level_screen_q)
+        self.ui.create_widgets(self)
 
     def keyPressEvent(self, event):
         if self.ui.state == "game":
