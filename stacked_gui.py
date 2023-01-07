@@ -11,11 +11,6 @@ class MainWindow(QMainWindow):
         self.ui = UiGame()
         self.ui.setupUi(self)
         self.ui.stackedWidget.setCurrentWidget(self.ui.level_screen_q)
-        self.ui.quit.clicked.connect(self.back_to_level)
-
-    def back_to_level(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.level_screen_q)
-        self.ui.state = "level"
 
     def keyPressEvent(self, event):
         if self.ui.state == "game":
