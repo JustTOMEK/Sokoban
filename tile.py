@@ -22,6 +22,9 @@ class Tile:
         self._type = self.full_type(char_type.lower())
 
     def full_type(self, char_type):
+        """
+        Translates char to full tyoe name.
+        """
         char_to_full = {"f": "floor",
                         "w": "wall",
                         "p": "player",
@@ -29,9 +32,6 @@ class Tile:
         if char_type not in char_to_full:
             raise TypeError("Wrong tile char")
         return char_to_full[char_type]
-
-    def is_target(self):
-        return self._is_target
 
     def set_type(self, new_type):
         if new_type not in ["wall", "floor", "player", "box"]:
@@ -41,8 +41,15 @@ class Tile:
     def type(self):
         return self._type
 
+    def is_target(self):
+        return self._is_target
+
 
 def swap_tiles(tile_1, tile_2):
+    """
+    Swaps to tiles.
+    is_target stays the same and type changes.
+    """
     if not isinstance(tile_1, Tile) or not isinstance(tile_2, Tile):
         raise TypeError("tiles have to be tile objects")
     if tile_1.type() == "wall" or tile_2.type() == "wall":
