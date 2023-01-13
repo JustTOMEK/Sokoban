@@ -5,7 +5,7 @@ from PySide2.QtWidgets import (QWidget, QSizePolicy, QStackedWidget,
                                QHBoxLayout, QPushButton, QLabel,
                                QLayout, QMessageBox)
 
-
+from tile import Floor, Box, Player, Wall
 from map import Map
 from functools import partial
 
@@ -240,22 +240,22 @@ class UiGame(object):
         Reads map.tiles() and assigns a QPixmap to tile at according postion.
         Sets QPixmap according to tile.type().
         """
-        no_targets = {"wall": "tiles_for_pyqt/wall.png",
-                      "box": "tiles_for_pyqt/box_not.png",
-                      "player": "tiles_for_pyqt/player_on_floor.png",
-                      "floor": "tiles_for_pyqt/floor.png"}
-        targets = {"box": "tiles_for_pyqt/box_yes.png",
-                   "floor": "tiles_for_pyqt/target_on_floor.png",
-                   "player": "tiles_for_pyqt/player_on_target.png"}
+        no_targets = {Wall: "tiles_for_pyqt/wall.png",
+                      Box: "tiles_for_pyqt/box_not.png",
+                      Player: "tiles_for_pyqt/player_on_floor.png",
+                      Floor: "tiles_for_pyqt/floor.png"}
+        targets = {Box: "tiles_for_pyqt/box_yes.png",
+                   Floor: "tiles_for_pyqt/target_on_floor.png",
+                   Player: "tiles_for_pyqt/player_on_target.png"}
         for row in range(self.map.rows()):
             for column in range(self.map.columns()):
                 if self.map.tiles()[row][column].is_target():
-                    pixmap = QPixmap(targets[self.map.tiles()[row][column].type()])
+                    pixmap = QPixmap(targets[type(self.map.tiles()[row][column])])
                 else:
-                    pixmap = QPixmap(no_targets[self.map.tiles()[row][column].type()])
+                    pixmap = QPixmap(no_targets[type(self.map.tiles()[row][column])])
                 width = self.tiles[0].width()
                 height = self.tiles[0].height()
-                self.tiles[row * self.map._columns + column].setPixmap(pixmap.scaled(width, height))
+                self.tiles[row * self.map.columns() + column].setPixmap(pixmap.scaled(width, height))
 
     def choose_level(self, level):
         """
