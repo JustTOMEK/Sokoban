@@ -2,13 +2,13 @@ import sys
 from PySide2.QtWidgets import QApplication
 from PySide2.QtWidgets import QMainWindow
 from PySide2.QtCore import Qt
-from ui_game import UiGame
+from ui_game_with_functions import UiGameWithFunctions
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.ui = UiGame()
+        self.ui = UiGameWithFunctions()
         self.ui.create_widgets(self)
 
     def keyPressEvent(self, event):
