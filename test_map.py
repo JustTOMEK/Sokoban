@@ -30,7 +30,7 @@ def test_player_position():
     map_in_str = ('w w F w w w\nw w f w w w\nw w b f'
                   'b F\nF f b p w w\nw w w b w w\nw w w F w w')
     new_map = Map(map_in_str)
-    assert new_map.player_position() == [3, 3]
+    assert new_map.player_position() == (3, 3)
 
 
 def test_target_coordinates():
@@ -182,7 +182,7 @@ def test_undo_move():
     assert new_map.undo_move()
     assert new_map.undo_move()
     assert new_map.undo_move() is None
-    assert new_map.player_position() == [3, 3]
+    assert new_map.player_position() == (3, 3)
     assert new_map.move_count() == 0
 
 

@@ -1,4 +1,5 @@
 Map txt files are x lines and y signs with spaces <br />
+Line should end with enter <br />
 A map has to be rectangle, so every line has to have equal number of signs <br />
 Rules:
     -w: wall
