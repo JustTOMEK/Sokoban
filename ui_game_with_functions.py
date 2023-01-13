@@ -81,11 +81,11 @@ class UiGameWithFunctions(UiGame):
         dialog = QMessageBox(self.stackedWidget)
         dialog.setStyleSheet(u"background-color: yellow;")
         dialog.setWindowTitle(f'You finished level {self.level}')
-        if self.level != 8:
+        if self.level != self.level_count:
             self.unlocked_levels[self.level] = 1
             dialog.addButton('Next Level', QMessageBox.YesRole)
         else:
-            dialog.setText('There is no next level. You finished the game'
+            dialog.setText('There is no next level. You finished the game '
                            'congratulations.')
         dialog.addButton('Main Menu', QMessageBox.YesRole)
         dialog.buttonClicked.connect(self.won_game_on_clicked)

@@ -6,12 +6,24 @@ from PySide2.QtWidgets import (QWidget, QSizePolicy, QStackedWidget,
                                QLayout)
 
 from functools import partial
+from os import scandir
 
 
 class UiGame(object):
+    def count_maps(self):
+        files = 0
+        dir_path = 'maps'
+        for path in scandir(dir_path):
+            if path.is_file():
+                files += 1
+        return files
+
     def create_widgets(self, MainWindow):
         self.state = "level"
-        self.unlocked_levels = [1, 0, 0, 0, 0, 0, 0, 0]
+        self.level_count = self.count_maps() - 1
+        self.unlocked_levels = [1]
+        for level in range(self.level_count - 1):
+            self.unlocked_levels.append(0)
         MainWindow.setWindowTitle("Sokoban")
         self.stackedWidget = QStackedWidget(MainWindow)
         self.stackedWidget.setStyleSheet(u"background-color: rgb(0, 0, 0);")
@@ -100,7 +112,7 @@ class UiGame(object):
         self.horizontalLayout_level.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_level.setContentsMargins(20, -1, 20, -1)
         self.buttons = []
-        for button in range(4):
+        for button in range(self.level_count // 2):
             self.buttons.append(QPushButton(self.level_screen_q))
             self.buttons[button].setStyleSheet(u"font-size: 80px;\n"
                                                "background-color: rgb(236, 221, 11);\n"
@@ -113,7 +125,7 @@ class UiGame(object):
         self.horizontalLayout_2_level.setSpacing(70)
         self.horizontalLayout_2_level.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_2_level.setContentsMargins(20, -1, 20, -1)
-        for button in range(4, 8):
+        for button in range(self.level_count // 2, self.level_count):
             self.buttons.append(QPushButton(self.level_screen_q))
             self.buttons[button].setStyleSheet(u"font-size: 80px;\n"
                                                "background-color: rgb(236, 221, 11);\n"
