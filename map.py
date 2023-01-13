@@ -1,5 +1,5 @@
-from tile import Tile, swap_tiles
-from move import Move
+from tile import Wall, Box, Player, Floor
+from move import BoxMove, NormalMove
 
 
 class Map:
@@ -37,12 +37,15 @@ class Map:
     def str_map_to_tiles(self, map_in_str):
         tile_map = [[]]
         row_number = 0
+        char_to_instance = {'f': Floor, 'p': Player, 'w': Wall, 'b': Box}
         for char in map_in_str:
             if char == "\n":
                 row_number += 1
                 tile_map.append([])
             else:
-                tile_map[row_number].append(Tile(char))
+                new_tile = char_to_instance[char.lower()](char.isupper())
+                tile_map[row_number].append(new_tile)
+        # checking if map is a rectangle
         lengths_of_rows = set()
         for row in tile_map:
             lengths_of_rows.add(len(row))
@@ -68,6 +71,17 @@ class Map:
     def targets(self):
         return self._targets
 
+    def add_move(self, move):
+        if isinstance(move, BoxMove) or isinstance(move, NormalMove):
+            self._moves.append(move)
+            self._move_count += 1
+        else:
+            raise ValueError("You can only add move objects to move list.")
+
+    def delete_last_move(self):
+        self._move_count -= 1
+        return self._moves.pop()
+
     def player_position(self):
         """
         :property player_position: position of a player
@@ -75,25 +89,8 @@ class Map:
         """
         for row_number, row in enumerate(self.tiles()):
             for column_number, tile in enumerate(row):
-                if tile.type() == "player":
+                if isinstance(tile, Player):
                     return [row_number, column_number]
-
-    def check_coordinates(self, coordinates):
-        """
-        takes data in two int touple (1, 2)
-        Checks what is at given coordinates.
-        Returns type of tile at coordinates
-        """
-        if not isinstance(coordinates, tuple):
-            raise TypeError("coordinates has to be 2 int tuple")
-        elif len(coordinates) != 2:
-            raise TypeError("coordinates has to be 2 int tuple")
-        row, column = coordinates
-        if not isinstance(row, int) or not isinstance(column, int):
-            raise TypeError("coordinates has to be 2 int tuple")
-        if row not in range(0, self._rows) or column not in range(0, self._columns):
-            return ValueError("row and column have to be in map range")
-        return self.tiles()[row][column].type()
 
     def target_coordinates(self):
         """
@@ -121,15 +118,45 @@ class Map:
         # directions list contains what coordinate player moves and box moves
         directions = [['Up', [-1, 0], [-2, 0]], ['Right', [0, 1], [0, 2]],
                       ['Down', [1, 0], [2, 0]], ['Left', [0, -1], [0, -2]]]
+        # not checking if player can move up if is in first row
+        # the same case for last row down and columns
+        if player_row == 0:
+            del directions[0]
+        if player_row == self.rows() - 1:
+            del directions[2]
+        if player_column == 0:
+            del directions[3]
+        if player_column == self.columns() - 1:
+            del directions[1]
         for direction in directions:
-            direction, player, box = direction
-            condition_normal = self.check_coordinates((player_row + player[0], player_column + player[1])) == 'floor'
-            condition__box_one = self.check_coordinates((player_row + player[0], player_column + player[1])) == 'box'
-            condition_box_two = self.check_coordinates((player_row + box[0], player_column + box[1])) == 'floor'
-            if condition_normal:
-                moves.append(Move("normal", direction, (player_row, player_column), (player_row + player[0], player_column + player[1])))
-            if condition__box_one and condition_box_two:
-                moves.append(Move("box_move", direction, (player_row, player_column), (player_row + player[0], player_column + player[1]), (player_row + box[0], player_column + box[1])))
+            # creating variables that hold tiles one and two away
+            # in given direction
+            direction, one_away, two_away = direction
+            one_away_row = player_row + one_away[0]
+            one_away_column = player_column + one_away[1]
+            tile_one_away = self.tiles()[one_away_row][one_away_column]
+            two_away_row = player_row + two_away[0]
+            two_away_column = player_column + two_away[1]
+            # if a tile two away is out of map range, it changes to a wall
+            # so player won't be able to make box move
+            if (two_away_row not in range(0, self.rows()) or
+               two_away_column not in range(0, self.columns())):
+                tile_two_away = Wall(False)
+            else:
+                tile_two_away = self.tiles()[two_away_row][two_away_column]
+            # checking if normal move, or box_move are available
+            if tile_one_away.can_move_into():
+                if isinstance(tile_one_away, Floor):
+                    moves.append(NormalMove(direction,
+                                            (player_row, player_column),
+                                            (one_away_row, one_away_column)))
+
+                elif (isinstance(tile_one_away, Box)
+                      and isinstance(tile_two_away, Floor)):
+                    moves.append(BoxMove(direction,
+                                         (player_row, player_column),
+                                         (one_away_row, one_away_column),
+                                         (two_away_row, two_away_column)))
         return moves
 
     def move(self, direction):
@@ -141,17 +168,19 @@ class Map:
         if direction not in ["Up", "Right", "Left", "Down"]:
             raise ValueError("Wrong Direction")
         for move in self.available_moves():
-            if move._direction == direction:
-                player_row, player_column = move.player_was_at()
-                player_to_row, player_to_column = move.player_moves_to()
-                if move.type() == "normal":
-                    swap_tiles(self.tiles()[player_row][player_column], self.tiles()[player_to_row][player_to_column])
-                elif move.type() == "box_move":
+            if move.direction() == direction:
+                player_x, player_y = move.player_was_at()
+                player_to_x, player_to_y = move.player_moves_to()
+                if isinstance(move, BoxMove):
                     box_to_row, box_to_column = move.box_moves_to()
-                    swap_tiles(self.tiles()[player_to_row][player_to_column], self.tiles()[box_to_row][box_to_column])
-                    swap_tiles(self.tiles()[player_row][player_column], self.tiles()[player_to_row][player_to_column])
-                self._moves.append(move)
-                self._move_count += 1
+                    self.swap_tiles((player_to_x, player_to_y),
+                                    (box_to_row, box_to_column))
+                    self.swap_tiles((player_x, player_y),
+                                    (player_to_x, player_to_y))
+                elif isinstance(move, NormalMove):
+                    self.swap_tiles((player_x, player_y),
+                                    (player_to_x, player_to_y))
+                self.add_move(move)
                 return True
         return False
 
@@ -161,7 +190,7 @@ class Map:
         For map to end every target coordinate tile has to be a box
         """
         for row, column in self.targets():
-            if self.tiles()[row][column].type() != "box":
+            if not isinstance(self.tiles()[row][column], Box):
                 return False
         return True
 
@@ -171,13 +200,36 @@ class Map:
         """
         if self._move_count == 0:
             return None
-        move = self._moves.pop()
+        move = self.delete_last_move()
         player_row, player_column = move.player_was_at()
         player_to_row, player_to_column = move.player_moves_to()
-        if move.type() == "normal":
-            swap_tiles(self.tiles()[player_row][player_column], self.tiles()[player_to_row][player_to_column])
-        elif move.type() == "box_move":
+        if isinstance(move, BoxMove):
             box_to_row, box_to_column = move.box_moves_to()
-            swap_tiles(self.tiles()[player_to_row][player_to_column], self.tiles()[box_to_row][box_to_column])
-            swap_tiles(self.tiles()[player_row][player_column], self.tiles()[box_to_row][box_to_column])
-        self._move_count -= 1
+            self.swap_tiles((player_to_row, player_to_column),
+                            (box_to_row, box_to_column))
+            self.swap_tiles((player_row, player_column),
+                            (box_to_row, box_to_column))
+        elif isinstance(move, NormalMove):
+            self.swap_tiles((player_row, player_column),
+                            (player_to_row, player_to_column))
+        return True
+
+    def swap_tiles(self, tile_1_coords, tile_2_coords):
+        """
+        method swaps two tiles
+        """
+        if (tile_1_coords[0] > self.rows() - 1 or
+           tile_2_coords[0] > self.rows() - 1 or
+           tile_1_coords[1] > self.columns() - 1 or
+           tile_2_coords[1] > self.columns() - 1):
+            raise ValueError("Coordinates out of map range")
+        x_1 = tile_1_coords[0]
+        y_1 = tile_1_coords[1]
+        x_2 = tile_2_coords[0]
+        y_2 = tile_2_coords[1]
+        tile_1_is_target = self._tiles[x_1][y_1].is_target()
+        tile_2_is_target = self._tiles[x_2][y_2].is_target()
+        self._tiles[x_1][y_1], self._tiles[x_2][y_2], = (self._tiles[x_2][y_2],
+                                                         self._tiles[x_1][y_1])
+        self._tiles[x_1][y_1].set_is_target(tile_1_is_target)
+        self._tiles[x_2][y_2].set_is_target(tile_2_is_target)

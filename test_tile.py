@@ -1,77 +1,106 @@
-from tile import Tile, swap_tiles
+from tile import Wall, Floor, Player, Box
 from pytest import raises
 
 
-def test_create_tile_upper_char():
-    new_tile = Tile("f")
-    assert new_tile.type() == "floor"
-
-
-def test_create_tile_lower_char():
-    new_tile = Tile("F")
-    assert new_tile.type() == "floor"
+def test_create_wall():
+    new_wall = Wall(False)
+    assert not new_wall.can_move_into()
 
 
 def test_create_wall_target():
     with raises(ValueError):
-        Tile("W")
+        Wall(True)
 
 
-def test_create_tile_string():
-    with raises(TypeError):
-        Tile("floor")
+def test_create_wall_no_target():
+    new_wall = Wall(False)
+    assert not new_wall.is_target()
 
 
-def test_create_wrong_tile():
-    with raises(TypeError):
-        Tile("z")
-
-
-def test_create_tile_int():
-    with raises(TypeError):
-        Tile(123)
-
-
-def test_is_not_target():
-    new_tile = Tile("f")
-    assert not new_tile.is_target()
-
-
-def test_is_target():
-    new_tile = Tile("F")
-    assert new_tile.is_target()
-
-
-def test_set_type():
-    new_tile = Tile("F")
-    new_tile.set_type("wall")
-    assert new_tile.type() == "wall"
-
-
-def test_set_wrong_type():
-    new_tile = Tile("F")
+def test_create_wall_wrong_init():
     with raises(ValueError):
-        new_tile.set_type("F")
+        Wall(0)
 
 
-def test_set_wall_target():
-    new_tile = Tile("F")
+def test_create_player():
+    new_player = Player(False)
+    assert not new_player.can_move_into()
+
+
+def test_create_player_target():
+    new_player = Player(True)
+    assert new_player.is_target()
+
+
+def test_create_player_no_target():
+    new_player = Player(False)
+    assert not new_player.is_target()
+
+
+def test_create_player_wrong_init():
     with raises(ValueError):
-        new_tile.set_type("W")
+        Player(1)
 
 
-def test_swap_tiles():
-    tile_1 = Tile("F")
-    tile_2 = Tile("p")
-    swap_tiles(tile_1, tile_2)
-    assert tile_1.type() == "player"
-    assert tile_2.type() == "floor"
-    assert tile_1.is_target()
-    assert not tile_2.is_target()
+def test_create_box():
+    new_box = Box(False)
+    assert new_box.can_move_into()
 
 
-def test_swap_not_wall_with_wall():
-    tile_1 = Tile("F")
-    tile_2 = Tile("w")
+def test_create_box_target():
+    new_box = Box(True)
+    assert new_box.is_target()
+
+
+def test_create_box_no_target():
+    new_box = Box(False)
+    assert not new_box.is_target()
+
+
+def test_create_box_wrong_init():
     with raises(ValueError):
-        swap_tiles(tile_1, tile_2)
+        Box(0)
+
+
+def test_create_floor():
+    new_floor = Floor(False)
+    assert new_floor.can_move_into()
+
+
+def test_create_floor_target():
+    new_floor = Floor(True)
+    assert new_floor.is_target()
+
+
+def test_create_floor_no_target():
+    new_floor = Floor(False)
+    assert not new_floor.is_target()
+
+
+def test_create_floor_wrong_init():
+    with raises(ValueError):
+        Floor(1)
+
+
+def test_set_is_target_wall():
+    new_wall = Wall(False)
+    with raises(ValueError):
+        new_wall.set_is_target(True)
+
+
+def test_set_is_target_player():
+    new_player = Player(False)
+    new_player.set_is_target(True)
+    assert new_player.is_target()
+
+
+def test_set_is_target_box():
+    new_box = Box(False)
+    new_box.set_is_target(True)
+    assert new_box.is_target()
+
+
+def test_set_is_target_floor():
+    new_floor = Floor(False)
+    new_floor.set_is_target(True)
+    assert new_floor.is_target()
