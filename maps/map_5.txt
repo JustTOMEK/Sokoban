@@ -1,8 +1,6 @@
-w w w w w w w w
-w w w F F w w w
-w w w f F w w w
-w w f f b F w w
-w w f b f f w w
-w f f w b b f w
-w f f p f f f w
-w w w w w w w w
+w w f p w w
+w w b b f f
+w w f b F f
+F F F f w w
+w w b f w w
+w w f f w w 
