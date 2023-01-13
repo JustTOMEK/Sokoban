@@ -24,8 +24,8 @@ class UiGameWithFunctions(UiGame):
 
     def map_set_board_size(self):
         """
-        Deletes all labels from level screen and adds
-        row*column new labels according to map size.
+        Deletes all tiles from level screen and adds
+        row*column new tiles according to map size.
         """
         # deleting all widgets from game layout
         for i in reversed(range(self.gridLayout.count())):
@@ -158,8 +158,8 @@ class UiGameWithFunctions(UiGame):
 
     def next_level(self, level):
         """
-        When level finished and nex_level clicked switchess
-        tiles to next level tiles.
+        When level finished and next_level clicked switches
+        map to next level map.
         """
         self.level = level
         file = open(f'maps/map_{level}.txt', "r")
