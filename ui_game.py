@@ -13,10 +13,7 @@ class UiGame(object):
         self.state = "level"
         self.unlocked_levels = [1, 0, 0, 0, 0, 0, 0, 0]
         MainWindow.setWindowTitle("Sokoban")
-        MainWindow.setFixedSize(880, 724)
-        self.main_screen = QWidget(MainWindow)
-        self.stackedWidget = QStackedWidget(self.main_screen)
-        self.stackedWidget.setGeometry(QRect(0, 0, 880, 724))
+        self.stackedWidget = QStackedWidget(MainWindow)
         self.stackedWidget.setStyleSheet(u"background-color: rgb(0, 0, 0);")
         # Here start game_screen widgets
         self.game_screen_q = QWidget()
@@ -29,8 +26,7 @@ class UiGame(object):
         self.frame.setSizePolicy(sizePolicy)
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
-        self.gridLayout_3 = QGridLayout(self.frame)
-        self.gridLayout = QGridLayout()
+        self.gridLayout = QGridLayout(self.frame)
         self.gridLayout.setHorizontalSpacing(0)
         self.gridLayout.setVerticalSpacing(0)
         self.game_screen.addWidget(self.frame)
@@ -128,5 +124,5 @@ class UiGame(object):
         self.level_screen.addLayout(self.horizontalLayout_2_level)
         self.stackedWidget.addWidget(self.level_screen_q)
         self.stackedWidget.addWidget(self.game_screen_q)
-        MainWindow.setCentralWidget(self.main_screen)
+        MainWindow.setCentralWidget(self.stackedWidget)
         self.stackedWidget.setCurrentWidget(self.level_screen_q)

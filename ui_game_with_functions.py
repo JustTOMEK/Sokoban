@@ -27,17 +27,18 @@ class UiGameWithFunctions(UiGame):
         Deletes all labels from level screen and adds
         row*column new labels according to map size.
         """
-        for i in reversed(range(self.gridLayout_3.count())):
-            self.gridLayout_3.removeItem(self.gridLayout_3.itemAt(i))
+        # deleting all widgets from game layout
+        for i in reversed(range(self.gridLayout.count())):
+            self.gridLayout.itemAt(i).widget().setParent(None)
         for i in reversed(range(self.gridLayout.count())):
             self.gridLayout.removeItem(self.gridLayout.itemAt(i))
+        # adding tiles to game layout
         self.tiles = []
         for row in range(self.map.rows()):
             for column in range(self.map.columns()):
                 self.tiles.append(QLabel(self.frame))
                 tile = self.tiles[row * self.map.columns() + column]
                 self.gridLayout.addWidget(tile, row, column, 1, 1)
-        self.gridLayout_3.addLayout(self.gridLayout, 0, 0, 1, 1)
 
     def reset_game(self):
         """
@@ -58,7 +59,8 @@ class UiGameWithFunctions(UiGame):
         """
         Opens Message box when help button clicked.
         """
-        dialog = QMessageBox(self.main_screen)
+        dialog = QMessageBox(self.stackedWidget)
+        dialog.setStyleSheet(u"background-color: yellow;")
         dialog.setWindowTitle("Help")
         dialog.setText('To finish Sokoban map move all boxes to targets. \n'
                        'At the beggining only level 1 is unlocked.\n'
@@ -76,7 +78,8 @@ class UiGameWithFunctions(UiGame):
         Opens Message box when game finished.
         It ables player to go to next level or go to level choose screen.
         """
-        dialog = QMessageBox(self.main_screen)
+        dialog = QMessageBox(self.stackedWidget)
+        dialog.setStyleSheet(u"background-color: yellow;")
         dialog.setWindowTitle(f'You finished level {self.level}')
         if self.level != 8:
             self.unlocked_levels[self.level] = 1
@@ -94,7 +97,8 @@ class UiGameWithFunctions(UiGame):
         """
         Opens Message box when locked level button clicked.
         """
-        dialog = QMessageBox(self.main_screen)
+        dialog = QMessageBox(self.stackedWidget)
+        dialog.setStyleSheet(u"background-color: yellow;")
         dialog.setWindowTitle("You have not unlocked this level")
         dialog.setText('In order to play this level finish all previous ones.')
         dialog.addButton('Choose another level', QMessageBox.YesRole)
@@ -130,10 +134,9 @@ class UiGameWithFunctions(UiGame):
                     pixmap = QPixmap(targets[tile_type])
                 else:
                     pixmap = QPixmap(no_targets[tile_type])
-                width = self.tiles[0].width()
-                height = self.tiles[0].height()
                 tile = self.tiles[row * self.map.columns() + column]
-                tile.setPixmap(pixmap.scaled(width, height))
+                tile.setPixmap(pixmap)
+                tile.setScaledContents(True)
 
     def choose_level(self, level):
         """
@@ -148,8 +151,6 @@ class UiGameWithFunctions(UiGame):
             self.stackedWidget.setCurrentWidget(self.game_screen_q)
             self.source = f'maps/map_{level}.txt'
             self.change_score()
-            self.tiles[0].resize(self.frame.width() / self.map.columns(),
-                                 self.frame.height() / self.map.rows())
             self.load_png()
             self.state = "game"
         else:
@@ -167,6 +168,4 @@ class UiGameWithFunctions(UiGame):
         self.source = f'maps/map_{level}.txt'
         self.change_score()
         self.state = "game"
-        self.tiles[0].resize(self.frame.width() / self.map.columns(),
-                             self.frame.height() / self.map.rows())
         self.load_png()
