@@ -1,9 +1,9 @@
-The only library, apart from default libraries is gui library PySide2.
-Tests are run on pytest.
-In order to launch the app user has to have PySide2 and python installed.
-In order to use test files user has to have pytest installed.
-In order to launch the app user has to run stacked_gui.py.
-Changes in file arrangment may cause ERRORS.
+The only library, apart from default libraries is gui library PySide2. <br />
+Tests are run on pytest. <br />
+In order to launch the app user has to have PySide2 and python installed. <br />
+In order to use test files user has to have pytest installed. <br />
+In order to launch the app user has to run stacked_gui.py. <br />
+Changes in file arrangment may cause ERRORS. <br />
 
 - Projects consists of files and folders:
 - folder map contains 9 txt files, that represent maps, nad readme
