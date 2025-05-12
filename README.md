@@ -1,3 +1,5 @@
+Sokoban game python project created by me
+
 The only library, apart from default libraries is gui library PySide2. <br />
 Tests are run on pytest. <br />
 In order to launch the app user has to have PySide2 and python installed. <br />
